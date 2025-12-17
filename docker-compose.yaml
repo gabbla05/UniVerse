@@ -8,21 +8,23 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - .:/app/
+      - .:/app
     links:
       - php
     networks:
       - pg-network
-  
+
   db:
     build:
       context: .
       dockerfile: docker/db/Dockerfile
     ports:
       - "5433:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
     networks:
       - pg-network
-  
+
   php:
     build:
       context: .
@@ -31,7 +33,7 @@ services:
       - .:/app
     networks:
       - pg-network
-  
+
   pgadmin-wdpai:
     image: dpage/pgadmin4:latest
     container_name: pg-admin2
@@ -42,7 +44,7 @@ services:
       - "5050:80"
     networks:
       - pg-network
-  
+
 networks:
   pg-network:
 
