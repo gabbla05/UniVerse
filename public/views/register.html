@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerse - Register</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/register.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="register-left">
+            <img src="/public/img/login-hero.png" alt="University Campus" class="hero-image">
+            </div>
+
+        <div class="register-right">
+            <div class="logo-container">
+                 <img src="/public/img/logo.png" alt="UniVerse Logo" class="logo-img">
+                <span class="logo-text">UniVerse</span>
+            </div>
+
+            <div class="register-content">
+                <h1>Create an account.</h1>
+                <p class="subtitle">Create an account to see and manage your events.</p>
+                
+                <form action="register" method="POST">
+                    <div class="messages">
+                        <?php if(isset($messages)){ foreach($messages as $message) { echo $message; } } ?>
+                    </div>
+
+                    <label>Name</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        <input name="name" type="text" placeholder="Enter your name">
+                    </div>
+
+                    <label>Surname</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        <input name="surname" type="text" placeholder="Enter your surname">
+                    </div>
+
+                    <label>Student ID</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0c0 .884.348 1.636.91 2.166M12 11h.01" /></svg>
+                        <input name="student_id" type="text" placeholder="Enter your student ID">
+                    </div>
+
+                    <label>University</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        <select name="university">
+                            <option value="" disabled selected>Choose your university</option>
+                            <option value="PK">Politechnika Krakowska</option>
+                            <option value="AGH">AGH</option>
+                        </select>
+                        <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+
+                    <label>Faculty</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                        <select name="faculty">
+                            <option value="" disabled selected>Choose your faculty</option>
+                            <option value="WIiT">Wydział Informatyki i Telekomunikacji</option>
+                            <option value="WA">Wydział Architektury</option>
+                        </select>
+                         <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    
+                    <label>Year of study</label>
+                    <div class="input-group">
+                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <select name="year">
+                             <option value="" disabled selected>Choose your year of study</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                        </select>
+                         <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+
+                    <label>University e-mail</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        <input name="email" type="text" placeholder="Enter university e-mail">
+                    </div>
+
+                    <label>Password</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-4V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <input name="password" type="password" placeholder="Enter your password">
+                    </div>
+                    
+                     <label>Confirm password</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-4V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <input name="password_confirm" type="password" placeholder="Confirm your password">
+                    </div>
+
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="terms" name="terms">
+                        <label for="terms" class="terms-label">I have read and agree to the Terms of Service and Privacy Policy.</label>
+                    </div>
+
+                    <button type="submit">Create account</button>
+
+                    <div class="signup-link">
+                        Already have an account? <a href="/login">Log in.</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

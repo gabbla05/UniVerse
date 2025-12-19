@@ -1,0 +1,291 @@
+.container {
+    display: flex;
+    height: 100vh; /* Ważne: wysokość całego ekranu */
+    width: 100vw;
+    overflow: hidden; /* Żeby nie było paska przewijania na głównej stronie */
+}
+
+/* --- LEWA STRONA (STOI W MIEJSCU) --- */
+.register-left {
+    flex: 1; /* 50% szerokości */
+    background-color: var(--bg-card);
+    position: relative;
+    overflow: hidden; /* To blokuje scrollowanie obrazka */
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Wypełnia całość */
+}
+
+/* --- PRAWA STRONA (SCROLLUJE SIĘ) --- */
+.register-right {
+    flex: 1; /* 50% szerokości */
+    display: flex;
+    flex-direction: column;
+    
+    /* TU JEST MAGIA SCROLLA: */
+    overflow-y: auto; /* Włącz scroll tylko w pionie, tylko w tym kontenerze */
+    height: 100vh; /* Musi mieć wysokość ekranu */
+    
+    padding: 3rem 4rem; /* Padding dookoła treści */
+    background-color: var(--bg-dark);
+}
+
+/* Stylizacja paska przewijania (żeby był ciemny) */
+.register-right::-webkit-scrollbar {
+    width: 8px;
+}
+.register-right::-webkit-scrollbar-track {
+    background: var(--bg-dark); 
+}
+.register-right::-webkit-scrollbar-thumb {
+    background: #334155; 
+    border-radius: 4px;
+}
+.register-right::-webkit-scrollbar-thumb:hover {
+    background: #475569; 
+}
+
+
+/* --- ELEMENTY WEWNĄTRZ --- */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Logo do prawej */
+    gap: 12px;
+    margin-bottom: 2rem;
+}
+
+.logo-img { height: 40px; width: auto; }
+
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-neon);
+    font-family: 'LogoFont', sans-serif;
+}
+
+.register-content {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto; /* Wyśrodkowanie kontentu wewnątrz scrolla */
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-white);
+}
+
+.subtitle {
+    color: var(--text-gray);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3rem; /* Żeby button nie był przyklejony do dołu przy scrollowaniu */
+}
+
+label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Input Group */
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    width: 20px;
+    height: 20px;
+    color: var(--text-gray);
+    pointer-events: none;
+    z-index: 2;
+}
+
+input, select {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3.5rem; /* Miejsce na ikonkę */
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+    background-color: var(--bg-card);
+    color: var(--text-white);
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.3s ease;
+    appearance: none; /* Usuwa domyślny styl selecta systemowego */
+}
+
+select {
+    cursor: pointer;
+    padding-right: 3rem; /* Miejsce na strzałkę po prawej */
+}
+
+/* Strzałka dla Selecta */
+.select-arrow {
+    position: absolute;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    color: var(--text-gray);
+    pointer-events: none;
+}
+
+input:focus, select:focus {
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 0 3px rgba(61, 223, 255, 0.2);
+}
+
+/* --- CUSTOM CHECKBOX (POPRAWIONY - METODA NA SZTYWNO) --- */
+
+.checkbox-container {
+    position: relative;
+    padding-left: 32px; /* Miejsce na kółko */
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    
+    /* Ustawiamy minimalną wysokość kontenera */
+    min-height: 24px;
+    display: flex;
+}
+
+/* Ukrywamy domyślny input */
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Styl tekstu etykiety */
+.terms-label {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    font-weight: 400;
+    
+    /* KLUCZ DO SUKCESU: */
+    /* Ustawiamy wysokość linii na 24px. Dzięki temu tekst jest przewidywalny. */
+    line-height: 24px; 
+    display: block;
+}
+
+/* --- ZEWNĘTRZNE KÓŁKO (RAMKA) --- */
+.terms-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    
+    /* MATEMATYKA: */
+    /* Linia tekstu ma 24px. Kółko ma 20px. */
+    /* (24 - 20) / 2 = 2px odstępu od góry, żeby było idealnie na środku. */
+    top: 2px; 
+    
+    height: 20px; 
+    width: 20px;
+    background-color: var(--bg-card);
+    border: 2px solid var(--input-border);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    box-sizing: border-box; /* Ważne, żeby border nie powiększał kółka */
+}
+
+/* Hover */
+.checkbox-container:hover input:not(:checked) ~ .terms-label::before {
+    border-color: var(--text-gray);
+}
+
+/* --- WEWNĘTRZNA KROPKA (NEONOWA) --- */
+.terms-label::after {
+    content: '';
+    position: absolute;
+    
+    /* Centrowanie w poziomie (wewnątrz kółka 20px) */
+    /* Kółko ma 20px, kropka 8px. (20-8)/2 = 6px marginesu wewnątrz. */
+    /* Ale musimy dodać border kółka jeśli box-sizing jest inny, więc bezpieczniej: */
+    left: 6px; 
+    
+    /* Centrowanie w pionie względem linii 24px */
+    /* (24px - 8px kropka) / 2 = 8px od góry */
+    top: 8px;
+    
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--accent-neon);
+    transform: scale(0); /* Ukryta na start */
+    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* --- STAN ZAZNACZONY --- */
+
+.checkbox-container input:checked ~ .terms-label::before {
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 8px rgba(61, 223, 255, 0.15);
+}
+
+.checkbox-container input:checked ~ .terms-label::after {
+    transform: scale(1); /* Tylko powiększamy, bez przesuwania */
+}
+
+/* Styl tekstu */
+.terms-label {
+    margin: 0;
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--text-gray);
+    padding-top: 2px;
+}
+
+
+/* --- BUTTONY I LINKI --- */
+
+button {
+    padding: 1rem;
+    border-radius: 12px;
+    border: none;
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    font-weight: 700;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 1rem;
+}
+
+button:hover { background-color: var(--accent-hover); }
+button:active { transform: scale(0.98); }
+
+.signup-link {
+    margin-top: 2rem;
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+.messages { color: #ef4444; text-align: center; margin-bottom: 1rem; font-weight: 600; }
+
+/* RESPANSYWNOŚĆ */
+@media screen and (max-width: 1024px) {
+    .register-left { display: none; }
+    .register-right { padding: 2rem; }
+    .logo-container { justify-content: center; }
+}
