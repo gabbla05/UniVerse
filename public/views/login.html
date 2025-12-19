@@ -3,17 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="public/styles/login.css">
-    <title>LOGIN</title>
+    <title>UniVerse - Login</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <form>
-        <h1>LOGIN</h1>
+    <div class="container">
+        <div class="login-left">
+            <img src="/public/img/login-hero.png" alt="University Campus" class="hero-image">
+            <div class="overlay"></div>
+        </div>
 
-        <input type="email" placeholder="Twój email">
-        <input type="password" placeholder="Twoje hasło">
-        <button type="submit">LOGIN</button>
-    </form>
+        <div class="login-right">
+            <div class="logo-container">
+                 <img src="/public/img/logo.png" alt="UniVerse Logo" class="logo-img">
+                <span class="logo-text">UniVerse</span>
+            </div>
+
+            <div class="login-content">
+                <h1>Welcome back!</h1>
+                <p class="subtitle">Log in to manage your events.</p>
+                
+                <form action="login" method="POST">
+                    <div class="messages">
+                        <?php if(isset($messages)){ foreach($messages as $message) { echo $message; } } ?>
+                    </div>
+
+                    <label for="email">University e-mail</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <input name="email" type="text" placeholder="Enter university e-mail">
+                    </div>
+
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-4V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <input name="password" type="password" placeholder="Enter your password">
+                    </div>
+
+                    <div class="forgot-pass">
+                        <a href="#">Forgot password?</a>
+                    </div>
+
+                    <button type="submit">Log in</button>
+
+                    <div class="signup-link">
+                        Do not have an account? <a href="/register">Create one.</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
