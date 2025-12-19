@@ -33,10 +33,10 @@ class UserRepository extends Repository {
 
     public function addUser(User $user)
     {
-        // ZMIANA: Dodajemy student_id, university_id, faculty_id do INSERTa
+        // ZMIANA: Dodajemy kolumnę 'role' do INSERTa
         $stmt = $this->database->connect()->prepare('
-            INSERT INTO users (name, surname, email, password, student_id, university_id, faculty_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (name, surname, email, password, student_id, university_id, faculty_id, role)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ');
 
         $stmt->execute([
@@ -46,7 +46,8 @@ class UserRepository extends Repository {
             $user->getPassword(),
             $user->getStudentId(),
             $user->getUniversityId(),
-            $user->getFacultyId()
+            $user->getFacultyId(),
+            $user->getRole() // Przekazujemy rolę (np. 'uni_admin')
         ]);
     }
 }

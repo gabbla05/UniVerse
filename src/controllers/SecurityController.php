@@ -1,8 +1,9 @@
 <?php
 
-require_once 'AppController.php';
-require_once __DIR__ .'/../models/User.php';
-require_once __DIR__ .'/../repository/UserRepository.php';
+// ZMIANA: Używamy __DIR__, żeby wskazać, że plik jest w tym samym folderze
+require_once __DIR__ . '/AppController.php';
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../repository/UserRepository.php';
 
 class SecurityController extends AppController {
 
@@ -10,39 +11,40 @@ class SecurityController extends AppController {
 
     public function __construct()
     {
-        // Jeśli AppController miałby konstruktor, należałoby wywołać parent::__construct();
         $this->userRepository = new UserRepository();
     }
 
     public function login() 
     {
-        // Jeśli nie wysłano formularza (metoda GET), pokaż po prostu widok logowania
         if (!$this->isPost()) {
             return $this->render('login');
         }
 
-        // Pobierz dane z formularza
         $email = $_POST['email'];
         $password = $_POST['password'];
 
-        // Sprawdź czy user istnieje w bazie
         $user = $this->userRepository->getUser($email);
 
         if (!$user) {
             return $this->render('login', ['messages' => ['User not found!']]);
         }
 
-        // Sprawdź hasło (na razie porównujemy tekst, w przyszłości password_verify)
         if ($user->getPassword() !== $password) {
             return $this->render('login', ['messages' => ['Wrong password!']]);
         }
-
-        // Logowanie udane!
-        // Na razie wyświetlamy sukces na ekranie logowania
-        return $this->render('login', ['messages' => ['Login successful! Witaj ' . $user->getName()]]);
         
-        // Docelowo tutaj będzie przekierowanie:
-        // header("Location: /dashboard");
+        // Logika sesji admina
+        session_start();
+        $_SESSION['user_email'] = $user->getEmail();
+        $_SESSION['user_role'] = $user->getRole();
+        
+        $url = "http://$_SERVER[HTTP_HOST]";
+        
+        if ($user->getRole() === 'app_admin') {
+             header("Location: {$url}/admin-view"); // Przekierowanie do panelu admina
+        } else {
+             header("Location: {$url}/dashboard");
+        }
     }
 
     public function register() 
@@ -56,17 +58,14 @@ class SecurityController extends AppController {
         $confirmedPassword = $_POST['password_confirm'];
         $name = $_POST['name'];
         $surname = $_POST['surname'];
-        
-        // ZMIANA: Pobieramy nowe pola z formularza
         $studentId = $_POST['student_id']; 
-        $universityId = (int)$_POST['university']; // Rzutujemy na int, bo z selecta przychodzi string "1"
+        $universityId = (int)$_POST['university'];
         $facultyId = (int)$_POST['faculty'];
 
         if ($password !== $confirmedPassword) {
             return $this->render('register', ['messages' => ['Please provide proper password']]);
         }
 
-        // ZMIANA: Tworzymy usera ze wszystkimi danymi
         $user = new User($email, $password, $name, $surname, $studentId, $universityId, $facultyId);
 
         $this->userRepository->addUser($user);

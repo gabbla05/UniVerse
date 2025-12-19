@@ -5,11 +5,11 @@ class User {
     private $password;
     private $name;
     private $surname;
-    private $studentId;    // Nowe pole
-    private $universityId; // Nowe pole
-    private $facultyId;    // Nowe pole
+    private $studentId;
+    private $universityId;
+    private $facultyId;
+    private $role; // NOWE POLE
 
-    // Aktualizacja konstruktora - dodajemy nowe argumenty na końcu (jako opcjonalne ?type, żeby stary kod się nie wywalił od razu)
     public function __construct(
         string $email, 
         string $password, 
@@ -17,7 +17,8 @@ class User {
         string $surname,
         ?string $studentId = null,
         ?int $universityId = null,
-        ?int $facultyId = null
+        ?int $facultyId = null,
+        string $role = 'user' // Domyślnie user, ale możemy zmienić
     ) {
         $this->email = $email;
         $this->password = $password;
@@ -26,16 +27,18 @@ class User {
         $this->studentId = $studentId;
         $this->universityId = $universityId;
         $this->facultyId = $facultyId;
+        $this->role = $role;
     }
 
-    // Gettery (stare zostają, dodajemy nowe)
+    // ... stare gettery ...
     public function getEmail(): string { return $this->email; }
     public function getPassword(): string { return $this->password; }
     public function getName(): string { return $this->name; }
     public function getSurname(): string { return $this->surname; }
-    
-    // Nowe gettery
     public function getStudentId(): ?string { return $this->studentId; }
     public function getUniversityId(): ?int { return $this->universityId; }
     public function getFacultyId(): ?int { return $this->facultyId; }
+    
+    // NOWY GETTER
+    public function getRole(): string { return $this->role; }
 }

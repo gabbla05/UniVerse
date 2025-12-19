@@ -1,0 +1,314 @@
+/* --- NAVBAR ADMIN --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 4rem;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--input-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.logo-img { height: 32px; width: auto; }
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-neon);
+    font-family: 'LogoFont', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Badge "ADMIN" przy logo */
+.badge {
+    font-size: 0.7rem;
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 1px;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.admin-name {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+.admin-name strong { color: var(--text-white); }
+
+.btn-logout {
+    color: #ef4444; /* Czerwony kolor dla wylogowania */
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.btn-logout:hover { color: #f87171; }
+
+
+/* --- LAYOUT --- */
+.admin-container {
+    display: flex;
+    gap: 2rem; /* Odstęp między kolumnami */
+    padding: 3rem 4rem;
+    min-height: calc(100vh - 70px);
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.list-section {
+    flex: 2; /* Lewa strona zajmuje 2/3 miejsca */
+}
+
+.form-section {
+    flex: 1; /* Prawa strona zajmuje 1/3 miejsca */
+    min-width: 350px;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+}
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-white);
+}
+.subtitle {
+    color: var(--text-gray);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+
+/* --- TABELA --- */
+.table-container {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+    overflow: hidden; /* Zaokrąglenie rogów tabeli */
+    /* Zapewnienie, że dropdown nie zostanie ucięty */
+    overflow: visible; 
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #162032; /* Ciemniejszy nagłówek */
+}
+
+th {
+    text-align: left;
+    padding: 1rem 1.5rem;
+    color: var(--text-gray);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+td {
+    padding: 1.2rem 1.5rem;
+    color: var(--text-white);
+    border-bottom: 1px solid var(--input-border);
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+/* Ostatni wiersz bez kreski */
+tr:last-child td { border-bottom: none; }
+
+/* Hover na wiersz */
+tbody tr:hover {
+    background-color: rgba(61, 223, 255, 0.03);
+}
+
+/* Przycisk akcji (kosz) */
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-gray);
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.action-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+
+/* --- FORMULARZ (Prawa strona) --- */
+.form-card {
+    background-color: var(--bg-card);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+    position: sticky;
+    top: 100px;
+}
+
+h2 {
+    font-size: 1.5rem; /* Troszkę mniejszy nagłówek w karcie */
+    margin-bottom: 0.5rem;
+    color: var(--text-white);
+}
+
+/* Naprawa gigantycznych ikon i inputów */
+.input-group {
+    position: relative; /* Ważne! Trzyma ikonkę w ryzach */
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    width: 20px;  /* SZTYWNA SZEROKOŚĆ - to naprawi problem! */
+    height: 20px; /* SZTYWNA WYSOKOŚĆ */
+    color: var(--text-gray);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Stylizacja inputa wewnątrz panelu admina */
+.form-card input, .form-card textarea {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3.5rem; /* Miejsce na ikonkę */
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+    background-color: var(--bg-dark); /* Ciemniejsze tło inputa dla kontrastu */
+    color: var(--text-white);
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.form-card input:focus, .form-card textarea:focus {
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 0 3px rgba(61, 223, 255, 0.1);
+}
+
+/* Etykiety */
+label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Przycisk dodawania */
+.btn-add {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    border: none;
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.btn-add:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-add:active {
+    transform: scale(0.98);
+}
+
+
+/* --- STYL ROZWIJANEJ LISTY WYDZIAŁÓW --- */
+
+details.faculty-dropdown {
+    position: relative;
+    font-size: 0.9rem;
+}
+
+details.faculty-dropdown summary {
+    cursor: pointer;
+    color: var(--accent-neon);
+    font-weight: 500;
+    list-style: none; /* Ukrywa domyślny trójkącik */
+    transition: color 0.2s;
+}
+
+details.faculty-dropdown summary:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+/* Ukrywamy domyślny znacznik w Chrome/Safari */
+details.faculty-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Lista, która się pojawia */
+ul.faculty-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--bg-card);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    margin: 5px 0 0 0;
+    list-style: none;
+    min-width: 200px;
+    z-index: 50;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+ul.faculty-list li {
+    padding: 8px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--text-white);
+    font-size: 0.85rem;
+}
+
+ul.faculty-list li:last-child {
+    border-bottom: none;
+}
+
+ul.faculty-list li:hover {
+    background-color: rgba(61, 223, 255, 0.1);
+}
+
+
+/* RESPANSYWNOŚĆ */
+@media screen and (max-width: 1024px) {
+    .admin-container {
+        flex-direction: column; /* Na tablecie jedna pod drugą */
+        padding: 2rem;
+    }
+    .form-card { position: static; }
+    .navbar { padding: 1rem 2rem; }
+    .table-container { overflow-x: auto; } /* Scroll tabeli na mobile */
+}

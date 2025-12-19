@@ -1,13 +1,24 @@
 <?php
 
+require_once 'src/controllers/AppController.php';
 require_once 'src/controllers/SecurityController.php';
+// ZMIANA: Musimy zaimportować AdminController, żeby Routing go widział!
+require_once 'src/controllers/AdminController.php';
 
 class Routing {
 
     public static $routes = [
-        "" => [ // Pusty string oznacza stronę główną "/"
-            "controller" => "AppController", // Użyjemy AppController bo to prosta strona statyczna
+        "" => [
+            "controller" => "AppController",
             "action" => "landing"
+        ],
+        "admin" => [
+            "controller" => "AdminController",
+            "action" => "admin"
+        ],
+        "addUniversity" => [
+            "controller" => "AdminController",
+            "action" => "addUniversity"
         ],
         "login" => [
             "controller" => "SecurityController",
@@ -20,24 +31,18 @@ class Routing {
     ];
 
     public static function run(string $path) {
-        switch($path) {
-            case 'dashboard':
-                // TODO connect with database
-                // get elements to present on dashboard
+        if (array_key_exists($path, self::$routes)) {
+            $controller = self::$routes[$path]["controller"];
+            $action = self::$routes[$path]["action"];
 
-                include 'public/views/dashboard.html';
-                break;
-            case 'login':
-            case 'register':
-                $controller = Routing::$routes[$path]["controller"];
-                $action = Routing::$routes[$path]["action"];
-
-                $controllerObj = new $controller;
-                $controllerObj->$action();
-                break; 
-            default:
-                include 'public/views/landing.html';
-                break;
+            $object = new $controller;
+            $object->$action();
+        } 
+        elseif ($path === 'dashboard') {
+             include 'public/views/dashboard.html';
+        }
+        else {
+            include 'public/views/landing.html';
         }
     }
 }

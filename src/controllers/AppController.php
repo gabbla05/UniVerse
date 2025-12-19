@@ -27,7 +27,12 @@ class AppController {
         print $output;
     }
 
+    // Dodane metody do obsługi nowych widoków
     public function landing() {
         return $this->render('landing');
+    }
+
+    public function adminView() {
+        return $this->render('admin');
     }
 }

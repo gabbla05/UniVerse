@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerse - Admin Panel</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="/public/img/logo.png" alt="UniVerse Logo" class="logo-img">
+            <span class="logo-text">UniVerse <span class="badge">ADMIN</span></span>
+        </div>
+        <div class="nav-actions">
+            <span class="admin-name">Logged as: <strong>Super Admin</strong></span>
+            <a href="/logout" class="btn-logout">Log out</a>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        
+        <div class="list-section">
+            <div class="section-header">
+                <h2>Manage Universities</h2>
+                <p class="subtitle">List of all registered universities in the system.</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="5%">ID</th>
+                            <th width="25%">University Name</th>
+                            <th width="15%">City</th>
+                            <th width="20%">Admin</th>
+                            <th width="25%">Faculties</th>
+                            <th width="10%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if(isset($universities)): ?>
+                        <?php foreach($universities as $uni): ?>
+                        <tr>
+                            <td><?= $uni->getId(); ?></td>
+                            <td><strong><?= $uni->getName(); ?></strong></td>
+                            <td><?= $uni->getCity(); ?></td>
+                            
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 24px; height: 24px; background: var(--accent-neon); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--bg-dark); font-size: 10px; font-weight: bold;">
+                                        A
+                                    </div>
+                                    <?= $uni->getAdminName(); ?>
+                                </div>
+                            </td>
+
+                            <td>
+                                <?php if(empty($uni->getFaculties())): ?>
+                                    <span style="color: var(--text-gray); font-size: 0.8rem;">No faculties</span>
+                                <?php else: ?>
+                                    <details class="faculty-dropdown">
+                                        <summary>Show faculties (<?= count($uni->getFaculties()); ?>)</summary>
+                                        <ul class="faculty-list">
+                                            <?php foreach($uni->getFaculties() as $faculty): ?>
+                                                <li><?= $faculty; ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </details>
+                                <?php endif; ?>
+                            </td>
+
+                            <td>
+                                <button class="action-btn delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-card">
+                <h2>Configure New University</h2>
+                <p class="subtitle">Set up university, faculties and admin account.</p>
+
+                <form action="addUniversity" method="POST">
+                    
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">1. University Details</h3>
+                    
+                    <label>University Name</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        <input name="name" type="text" placeholder="e.g. MIT" required>
+                    </div>
+
+                    <label>City</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <input name="city" type="text" placeholder="e.g. Boston" required>
+                    </div>
+
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">2. Faculties</h3>
+                    
+                    <label>Faculties List (separated by comma)</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 12px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                        <textarea name="faculties" placeholder="e.g. Faculty of Architecture, Faculty of IT, Faculty of Physics..." style="width: 100%; padding: 1rem 1rem 1rem 3.5rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; font-family: 'Inter'; outline: none; min-height: 80px;" required></textarea>
+                    </div>
+
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">3. University Admin</h3>
+
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label>Name</label>
+                            <input name="admin_name" type="text" placeholder="John" style="margin-bottom: 10px;" required>
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Surname</label>
+                            <input name="admin_surname" type="text" placeholder="Doe" style="margin-bottom: 10px;" required>
+                        </div>
+                    </div>
+
+                    <label>Admin E-mail</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        <input name="admin_email" type="email" placeholder="admin@uni.edu" required>
+                    </div>
+
+                    <label>Admin Password</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-4V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <input name="admin_password" type="password" placeholder="Secret password" required>
+                    </div>
+
+                    <button type="submit" class="btn-add">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Create University & Admin
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
