@@ -1,0 +1,202 @@
+/* --- NAVBAR --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem; /* Duże odstępy dla nowoczesnego wyglądu */
+    position: absolute; /* Navbar unosi się nad tłem */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.logo-img { height: 40px; width: auto; }
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-neon);
+    font-family: 'LogoFont', sans-serif; 
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Przycisk "Log in" - sam tekst */
+.btn-text {
+    color: var(--text-gray);
+    font-weight: 600;
+    font-size: 1rem;
+}
+.btn-text:hover { color: var(--text-white); }
+
+/* Przycisk "Get Started" - mały neonowy */
+.btn-primary {
+    padding: 0.6rem 1.5rem;
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    font-weight: 700;
+    border-radius: 8px;
+    transition: transform 0.2s, background-color 0.2s;
+}
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    color: var(--bg-dark) !important;
+    transform: translateY(-2px);
+}
+
+
+/* --- HERO SECTION --- */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh; /* Cały ekran */
+    padding: 0 4rem;
+    padding-top: 80px; /* Miejsce na navbar */
+    position: relative;
+    overflow: hidden;
+}
+
+/* LEWA STRONA (TEKST) */
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 4rem; /* Bardzo duży tekst */
+    line-height: 1.1;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--text-white);
+}
+
+.highlight {
+    color: var(--accent-neon); /* Neonowy akcent w tytule */
+    /* Opcjonalnie: gradient tekstu */
+    background: linear-gradient(90deg, var(--accent-neon), #0EA5E9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    max-width: 90%;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+/* Duży guzik Join Now */
+.btn-large {
+    padding: 1rem 2.5rem;
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    transition: all 0.3s;
+    box-shadow: 0 0 20px rgba(61, 223, 255, 0.3); /* Neonowa poświata */
+}
+.btn-large:hover {
+    background-color: var(--accent-hover);
+    /* KLUCZOWA POPRAWKA: Wymuszamy, żeby tekst pozostał ciemny */
+    color: var(--bg-dark) !important; 
+    
+    box-shadow: 0 0 30px rgba(61, 223, 255, 0.6); /* Zwiększyłem trochę poświatę */
+    transform: translateY(-3px);
+}
+
+/* Guzik Sign In (obramowanie) */
+.btn-outline {
+    padding: 1rem 2.5rem;
+    background-color: transparent;
+    border: 2px solid var(--input-border);
+    color: var(--text-white);
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+.btn-outline:hover {
+    border-color: var(--accent-neon);
+    color: var(--accent-neon);
+}
+
+/* Statystyki na dole */
+.stats {
+    display: flex;
+    gap: 3rem;
+    border-top: 1px solid var(--input-border);
+    padding-top: 1.5rem;
+}
+.stat-item { display: flex; flex-direction: column; }
+.stat-number { font-size: 1.5rem; font-weight: 700; color: var(--text-white); }
+.stat-label { font-size: 0.9rem; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
+
+
+/* PRAWA STRONA (ZDJĘCIE) */
+.hero-image-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.hero-img {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    position: relative;
+    z-index: 2;
+    /* Lekki obrót dla dynamiki */
+    transform: rotate(3deg);
+    box-shadow: 20px 20px 60px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Neonowa plama pod zdjęciem */
+.blob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(61,223,255,0.2) 0%, rgba(15,23,42,0) 70%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* RESPANSYWNOŚĆ */
+@media screen and (max-width: 1024px) {
+    .hero {
+        flex-direction: column-reverse; /* Na telefonie zdjęcie na górę, tekst pod spód? Albo odwrotnie */
+        justify-content: center;
+        text-align: center;
+        padding-top: 100px;
+    }
+    
+    .hero-content { align-items: center; margin-top: 2rem; }
+    .hero-title { font-size: 3rem; }
+    .hero-actions { justify-content: center; }
+    .stats { justify-content: center; }
+    .hero-image-container { justify-content: center; }
+    .hero-img { transform: rotate(0); max-width: 80%; }
+}

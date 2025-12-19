@@ -26,4 +26,8 @@ class AppController {
         }
         print $output;
     }
+
+    public function landing() {
+        return $this->render('landing');
+    }
 }

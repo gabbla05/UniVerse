@@ -5,6 +5,10 @@ require_once 'src/controllers/SecurityController.php';
 class Routing {
 
     public static $routes = [
+        "" => [ // Pusty string oznacza stronę główną "/"
+            "controller" => "AppController", // Użyjemy AppController bo to prosta strona statyczna
+            "action" => "landing"
+        ],
         "login" => [
             "controller" => "SecurityController",
             "action" => "login"
@@ -32,7 +36,7 @@ class Routing {
                 $controllerObj->$action();
                 break; 
             default:
-                include 'public/views/404.html';
+                include 'public/views/landing.html';
                 break;
         }
     }
