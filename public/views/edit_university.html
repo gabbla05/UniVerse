@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UniVerse - Edit University</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="logo-text">UniVerse <span class="badge">ADMIN</span></span>
+        </div>
+        <a href="/admin" style="color: var(--text-gray); margin-right: 20px;">Cancel</a>
+    </nav>
+
+    <div class="admin-container" style="justify-content: center;">
+        <div class="form-section" style="max-width: 600px; flex: 1;">
+            <div class="form-card">
+                <h2>Edit University Profile</h2>
+                <p class="subtitle">Update university details, faculties and admin info.</p>
+
+                <form action="edit-university?id=<?= $data['university']['id']; ?>" method="POST">
+                    
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">1. University Details</h3>
+                    
+                    <label>University Name</label>
+                    <div class="input-group">
+                        <input name="name" type="text" value="<?= $data['university']['name']; ?>" required>
+                    </div>
+
+                    <label>City</label>
+                    <div class="input-group">
+                        <input name="city" type="text" value="<?= $data['university']['city']; ?>" required>
+                    </div>
+
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">2. Faculties</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-gray); margin-bottom: 5px;">Edit list separated by commas. Removing a faculty will delete its events!</p>
+                    
+                    <div class="input-group">
+                        <textarea name="faculties" rows="4" required><?= $data['faculties']; ?></textarea>
+                    </div>
+
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">3. University Admin</h3>
+
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label>First Name</label>
+                            <input name="admin_name" type="text" value="<?= $data['admin']['name'] ?? ''; ?>" required>
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Surname</label>
+                            <input name="admin_surname" type="text" value="<?= $data['admin']['surname'] ?? ''; ?>" required>
+                        </div>
+                    </div>
+
+                    <label>Admin E-mail</label>
+                    <div class="input-group">
+                        <input name="admin_email" type="email" value="<?= $data['admin']['email'] ?? ''; ?>" required>
+                    </div>
+
+                    <button type="submit" class="btn-add">Save All Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

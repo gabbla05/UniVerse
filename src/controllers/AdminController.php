@@ -1,6 +1,5 @@
 <?php
 
-// ZMIANA: Używamy __DIR__ przy imporcie AppController
 require_once __DIR__ . '/AppController.php';
 require_once __DIR__ . '/../models/University.php';
 require_once __DIR__ . '/../models/User.php';
@@ -13,41 +12,44 @@ class AdminController extends AppController {
     private $userRepository;
 
     public function __construct() {
-        // AppController nie ma konstruktora, więc nie musimy wołać parent::__construct()
-        // Ale inicjalizujemy nasze repozytoria
         $this->universityRepository = new UniversityRepository();
         $this->userRepository = new UserRepository();
     }
 
     public function admin() {
         session_start();
-        // Tutaj w przyszłości odkomentuj sprawdzanie roli:
-        // if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') { ... }
+        // Zabezpieczenie: Tylko app_admin
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
+             $url = "http://$_SERVER[HTTP_HOST]";
+             header("Location: {$url}/login");
+             exit();
+        }
 
         $universities = $this->universityRepository->getUniversities();
         return $this->render('admin', ['universities' => $universities]);
     }
 
     public function addUniversity() {
+        session_start();
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
+             $url = "http://$_SERVER[HTTP_HOST]";
+             header("Location: {$url}/login");
+             exit();
+        }
+
         if (!$this->isPost()) {
              return $this->admin();
         }
 
-        // 1. DANE UCZELNI
         $uniName = $_POST['name'];
         $uniCity = $_POST['city'];
-        
-        // 2. DANE WYDZIAŁÓW
         $facultiesString = $_POST['faculties']; 
-        
-        // 3. DANE ADMINA UCZELNI
         $adminName = $_POST['admin_name'];
         $adminSurname = $_POST['admin_surname'];
         $adminEmail = $_POST['admin_email'];
         $adminPassword = $_POST['admin_password'];
 
-        // LOGIKA
-        // 1. Dodaj uczelnię i weź jej ID
+        // 1. Dodaj uczelnię
         $newUniId = $this->universityRepository->addUniversity($uniName, $uniCity);
 
         // 2. Dodaj wydziały
@@ -59,12 +61,12 @@ class AdminController extends AppController {
             }
         }
 
-        // 3. Dodaj admina uczelni
+        // 3. Dodaj admina
         $hashedAdminPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
 
         $uniAdmin = new User(
             $adminEmail, 
-            $hashedAdminPassword, // Przekazujemy zahaszowane
+            $hashedAdminPassword, 
             $adminName, 
             $adminSurname,
             null,       
@@ -73,10 +75,78 @@ class AdminController extends AppController {
             'uni_admin' 
         );
 
-        $this->userRepository->addUser($uniAdmin);;
+        $this->userRepository->addUser($uniAdmin);
 
-        // Odśwież stronę po dodaniu
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/admin");
+    }
+
+    // --- NOWE METODY ---
+
+    public function deleteUniversity() {
+        session_start();
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
+             $url = "http://$_SERVER[HTTP_HOST]";
+             header("Location: {$url}/login");
+             exit();
+        }
+
+        $id = $_GET['id'];
+        if ($id) {
+            $this->universityRepository->deleteUniversity($id);
+        }
+        
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/admin");
+    }
+
+    // ... wewnątrz AdminController ...
+
+    public function editUniversity() {
+        session_start();
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
+             $url = "http://$_SERVER[HTTP_HOST]";
+             header("Location: {$url}/login");
+             exit();
+        }
+
+        $id = $_GET['id'];
+        if (!$id) { 
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/admin"); 
+            exit();
+        }
+
+        // GET: Wyświetl formularz z pełnymi danymi
+        if ($this->isGet()) {
+            // Używamy nowej metody zwracającej tablicę danych
+            $data = $this->universityRepository->getUniversityDetails($id);
+            
+            // Jeśli nie znaleziono uczelni, wróć
+            if (empty($data)) {
+                header("Location: /admin");
+                exit();
+            }
+
+            return $this->render('edit_university', ['data' => $data]);
+        }
+
+        // POST: Zapisz zmiany
+        if ($this->isPost()) {
+            // Zbieramy wszystko w jedną paczkę
+            $updateData = [
+                'uni_name' => $_POST['name'],
+                'uni_city' => $_POST['city'],
+                'admin_name' => $_POST['admin_name'],
+                'admin_surname' => $_POST['admin_surname'],
+                'admin_email' => $_POST['admin_email'],
+                'faculties' => $_POST['faculties'] // String z przecinkami
+            ];
+            
+            $this->universityRepository->updateUniversityData($id, $updateData);
+            
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/admin");
+        }
     }
 }

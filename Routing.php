@@ -3,7 +3,7 @@
 require_once 'src/controllers/AppController.php';
 require_once 'src/controllers/SecurityController.php';
 require_once 'src/controllers/AdminController.php';
-require_once 'src/controllers/EventController.php'; // NOWY KONTROLER (zaraz go stworzymy)
+require_once 'src/controllers/EventController.php'; 
 
 class Routing {
 
@@ -12,15 +12,15 @@ class Routing {
             "controller" => "AppController",
             "action" => "landing"
         ],
-        "logout" => [ // TRASA WYLOGOWANIA
+        "logout" => [ 
             "controller" => "SecurityController",
             "action" => "logout"
         ],
-        "dashboard" => [ // Dashboard przejmuje EventController
+        "dashboard" => [ 
             "controller" => "EventController",
             "action" => "dashboard"
         ],
-        "add-event" => [ // Formularz dodawania
+        "add-event" => [ 
             "controller" => "EventController",
             "action" => "addEvent"
         ],
@@ -49,9 +49,25 @@ class Routing {
             "action" => "deleteEvent"
         ],
         "search" => [
-        "controller" => "EventController",
-        "action" => "search"
+            "controller" => "EventController",
+            "action" => "search"
         ],
+        "join-event" => [
+            "controller" => "EventController",
+            "action" => "join"
+        ],
+        "leave-event" => [
+            "controller" => "EventController",
+            "action" => "leave"
+        ],
+        "delete-university" => [ // NOWA TRASA
+            "controller" => "AdminController",
+            "action" => "deleteUniversity"
+        ],
+        "edit-university" => [ // NOWA TRASA
+            "controller" => "AdminController",
+            "action" => "editUniversity"
+        ]
     ];
 
     public static function run(string $path) {
@@ -63,7 +79,7 @@ class Routing {
             $object->$action();
         } 
         else {
-            include 'public/views/landing.html'; // Domyślny widok
+            include 'public/views/landing.html'; 
         }
     }
 }

@@ -301,6 +301,35 @@ ul.faculty-list li:hover {
     background-color: rgba(61, 223, 255, 0.1);
 }
 
+/* --- IKONKI AKCJI (Edit/Delete) --- */
+a.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+/* Kolory */
+.action-btn.edit {
+    color: var(--text-gray);
+}
+.action-btn.edit:hover {
+    color: var(--accent-neon);
+    background-color: rgba(61, 223, 255, 0.1);
+}
+
+.action-btn.delete {
+    color: var(--text-gray);
+}
+.action-btn.delete:hover {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
 
 /* RESPANSYWNOŚĆ */
 @media screen and (max-width: 1024px) {
