@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UniVerse - Edit Event</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="logo-text">UniVerse <span class="badge">EDIT MODE</span></span>
+        </div>
+        <a href="/dashboard" style="color: var(--text-gray); margin-right: 20px;">Cancel</a>
+    </nav>
+
+    <div class="admin-container" style="justify-content: center;">
+        <div class="form-section" style="max-width: 600px; flex: 1;">
+            <div class="form-card">
+                <h2>Edit Event</h2>
+                <p class="subtitle">Update details for "<?= $event->getTitle(); ?>"</p>
+
+                <form action="edit-event?id=<?= $event->getId(); ?>" method="POST" enctype="multipart/form-data">
+                    
+                    <label>Event Title</label>
+                    <div class="input-group">
+                        <input name="title" type="text" value="<?= $event->getTitle(); ?>" required>
+                    </div>
+
+                    <label>Description</label>
+                    <textarea name="description" rows="5" style="width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem;"><?= $event->getDescription(); ?></textarea>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1;">
+                            <label>Date & Time</label>
+                            <input name="date" type="datetime-local" value="<?= date('Y-m-d\TH:i', strtotime($event->getDate())); ?>" required>
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Location</label>
+                            <input name="location" type="text" value="<?= $event->getLocation(); ?>" required>
+                        </div>
+                    </div>
+
+                    <label>Category</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                        <select name="category" required style="width: 100%; padding: 1rem 1rem 1rem 3.5rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; appearance: none;">
+                            <option value="Workshops" <?= $event->getCategory() == 'Workshops' ? 'selected' : '' ?>>Workshops</option>
+                            <option value="Parties" <?= $event->getCategory() == 'Parties' ? 'selected' : '' ?>>Parties</option>
+                            <option value="Sport" <?= $event->getCategory() == 'Sport' ? 'selected' : '' ?>>Sport</option>
+                            <option value="Other" <?= $event->getCategory() == 'Other' ? 'selected' : '' ?>>Other</option>
+                        </select>
+                    </div>
+
+                    <label style="margin-top: 1.5rem;">Update Image (Optional)</label>
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 2rem;">
+                        <img src="/public/uploads/<?= $event->getImage(); ?>" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--input-border);">
+                        <input name="file" type="file" accept="image/*" style="color: var(--text-gray);">
+                    </div>
+
+                    <button type="submit" class="btn-add">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

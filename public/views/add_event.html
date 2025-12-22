@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerse - Add Event</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="/public/img/logo.png" alt="UniVerse Logo" class="logo-img">
+            <span class="logo-text">UniVerse <span class="badge">EVENT MANAGER</span></span>
+        </div>
+        <a href="/dashboard" style="color: var(--text-gray); font-weight: 600; margin-right: 20px;">Cancel</a>
+    </nav>
+
+    <div class="admin-container" style="justify-content: center;">
+        
+        <div class="form-section" style="max-width: 600px; flex: 1; min-width: auto;">
+            <div class="form-card">
+                <h2>Create New Event</h2>
+                <p class="subtitle">Share something awesome with your students.</p>
+
+                <form action="add-event" method="POST" enctype="multipart/form-data">
+                    
+                    <?php if(isset($messages)){ foreach($messages as $message) { echo "<p style='color: #ef4444; margin-bottom: 1rem;'>$message</p>"; } } ?>
+
+                    <label>Event Title</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        <input name="title" type="text" placeholder="e.g. Neon Party 2026" required>
+                    </div>
+
+                    <label>Description</label>
+                    <textarea name="description" rows="5" placeholder="What's happening?" style="width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; font-family: 'Inter'; outline: none; margin-bottom: 1.5rem; resize: vertical;"></textarea>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label>Date & Time</label>
+                            <div class="input-group">
+                                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                <input name="date" type="datetime-local" required>
+                            </div>
+                        </div>
+                        <div style="flex: 1; min-width: 200px;">
+                            <label>Location</label>
+                            <div class="input-group">
+                                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                <input name="location" type="text" placeholder="e.g. Main Hall" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label>Category</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                        <select name="category" required style="width: 100%; padding: 1rem 1rem 1rem 3.5rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; appearance: none;">
+                            <option value="" disabled selected>Select category</option>
+                            <option value="Workshops">Workshops</option>
+                            <option value="Parties">Parties</option>
+                            <option value="Sport">Sport</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <label style="margin-top: 0.5rem;">Event Image</label>
+                    <div style="margin-bottom: 2rem;">
+                        <input name="file" type="file" accept="image/*" required style="color: var(--text-gray);">
+                    </div>
+
+                    <button type="submit" class="btn-add">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Publish Event
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

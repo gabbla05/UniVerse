@@ -8,7 +8,8 @@ class User {
     private $studentId;
     private $universityId;
     private $facultyId;
-    private $role; // NOWE POLE
+    private $role;
+    private $id; // NOWE POLE
 
     public function __construct(
         string $email, 
@@ -18,7 +19,8 @@ class User {
         ?string $studentId = null,
         ?int $universityId = null,
         ?int $facultyId = null,
-        string $role = 'user' // Domyślnie user, ale możemy zmienić
+        string $role = 'user',
+        ?int $id = null // NOWY ARGUMENT (na końcu)
     ) {
         $this->email = $email;
         $this->password = $password;
@@ -28,6 +30,7 @@ class User {
         $this->universityId = $universityId;
         $this->facultyId = $facultyId;
         $this->role = $role;
+        $this->id = $id; // Przypisujemy ID
     }
 
     // ... stare gettery ...
@@ -38,7 +41,8 @@ class User {
     public function getStudentId(): ?string { return $this->studentId; }
     public function getUniversityId(): ?int { return $this->universityId; }
     public function getFacultyId(): ?int { return $this->facultyId; }
+    public function getRole(): string { return $this->role; }
     
     // NOWY GETTER
-    public function getRole(): string { return $this->role; }
+    public function getId(): ?int { return $this->id; }
 }

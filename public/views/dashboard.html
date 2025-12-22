@@ -3,13 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="public/styles/dashboard.css">
-    <script src="public/scripts/main.js" defer></script>
-
-    <title>DASHBOARD</title>
+    <title>UniVerse - Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>DASHBOARD</h1>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="/public/img/logo.png" alt="UniVerse Logo" class="logo-img">
+            <span class="logo-text">UniVerse</span>
+        </div>
+        <div class="nav-links">
+            <a href="/my-events" class="nav-item">My events</a>
+            
+            <div class="user-menu">
+                <span style="color: var(--text-gray); font-size: 0.9rem; margin-right: 15px;">
+                    <?= $_SESSION['user_email'] ?? 'Guest'; ?>
+                </span>
+                <a href="/logout" class="nav-item" style="color: #ef4444;">Log out</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-content">
+        
+        <div class="header-row">
+            <h1>Upcoming events</h1>
+            
+            <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
+                <a href="/add-event" class="btn-add-event">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Add Event
+                </a>
+            <?php endif; ?>
+        </div>
+
+        <div class="toolbar">
+            <div class="filters">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Workshops</button>
+                <button class="filter-btn">Parties</button>
+                <button class="filter-btn">Sport</button>
+            </div>
+            
+            <div class="search-bar">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" placeholder="Search">
+            </div>
+        </div>
+
+        <div class="events-grid">
+            
+            <?php if(empty($events)): ?>
+                <p style="color: var(--text-gray); grid-column: 1/-1; text-align: center;">No upcoming events.</p>
+            <?php else: ?>
+                <?php foreach($events as $event): ?>
+                <div class="event-card" style="position: relative;"> <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
+                        <div class="card-actions">
+                            <a href="/edit-event?id=<?= $event->getId(); ?>" class="icon-btn edit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </a>
+                            <a href="/delete-event?id=<?= $event->getId(); ?>" class="icon-btn delete" onclick="return confirm('Are you sure you want to delete this event?');">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="card-image">
+                        <?php if($event->getImage()): ?>
+                            <img src="/public/uploads/<?= $event->getImage(); ?>" alt="Event" style="width:100%; height:100%; object-fit:cover;">
+                        <?php else: ?>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-details">
+                        <h3><?= $event->getTitle(); ?></h3>
+                        <p class="event-date"><?= str_replace('T', ' ', $event->getDate()); ?></p>
+                        <p style="font-size: 0.8rem; color: #64748B; margin: 5px 0;">
+                            <?= $event->getLocation(); ?>
+                        </p>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+            <?php endif; ?>
+
+        </div>
+    </main>
+    <script>
+        const userRole = "<?= $_SESSION['user_role'] ?? ''; ?>";
+    </script>
+
+    <script src="/public/scripts/search.js"></script>
 </body>
 </html>
+
+
+    
+ 

@@ -1,6 +1,5 @@
 <?php
 
-// ZMIANA: Używamy __DIR__, żeby wskazać, że plik jest w tym samym folderze
 require_once __DIR__ . '/AppController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../repository/UserRepository.php';
@@ -29,19 +28,24 @@ class SecurityController extends AppController {
             return $this->render('login', ['messages' => ['User not found!']]);
         }
 
-        if ($user->getPassword() !== $password) {
+        // ZMIANA: Używamy password_verify do sprawdzenia hash'a
+        if (!password_verify($password, $user->getPassword())) {
             return $this->render('login', ['messages' => ['Wrong password!']]);
         }
         
-        // Logika sesji admina
         session_start();
+        
+        // ZMIANA: Zapisujemy ID do sesji
+        $_SESSION['user_id'] = $user->getId(); 
+        
         $_SESSION['user_email'] = $user->getEmail();
         $_SESSION['user_role'] = $user->getRole();
+        $_SESSION['user_university_id'] = $user->getUniversityId();
         
         $url = "http://$_SERVER[HTTP_HOST]";
         
         if ($user->getRole() === 'app_admin') {
-             header("Location: {$url}/admin-view"); // Przekierowanie do panelu admina
+             header("Location: {$url}/admin");
         } else {
              header("Location: {$url}/dashboard");
         }
@@ -66,10 +70,23 @@ class SecurityController extends AppController {
             return $this->render('register', ['messages' => ['Please provide proper password']]);
         }
 
-        $user = new User($email, $password, $name, $surname, $studentId, $universityId, $facultyId);
+        // ZMIANA: Hashujemy hasło przed zapisaniem!
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // Przekazujemy zahaszowane hasło do obiektu User
+        $user = new User($email, $hashedPassword, $name, $surname, $studentId, $universityId, $facultyId);
 
         $this->userRepository->addUser($user);
 
         return $this->render('login', ['messages' => ['You have been successfully registered!']]);
+    }
+
+    public function logout() {
+        session_start();
+        session_unset();
+        session_destroy();
+        
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/login");
     }
 }

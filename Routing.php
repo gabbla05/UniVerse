@@ -2,8 +2,8 @@
 
 require_once 'src/controllers/AppController.php';
 require_once 'src/controllers/SecurityController.php';
-// ZMIANA: Musimy zaimportować AdminController, żeby Routing go widział!
 require_once 'src/controllers/AdminController.php';
+require_once 'src/controllers/EventController.php'; // NOWY KONTROLER (zaraz go stworzymy)
 
 class Routing {
 
@@ -12,22 +12,46 @@ class Routing {
             "controller" => "AppController",
             "action" => "landing"
         ],
-        "admin" => [
-            "controller" => "AdminController",
-            "action" => "admin"
-        ],
-        "addUniversity" => [
-            "controller" => "AdminController",
-            "action" => "addUniversity"
-        ],
-        "login" => [
+        "logout" => [ // TRASA WYLOGOWANIA
             "controller" => "SecurityController",
-            "action" => "login"
+            "action" => "logout"
         ],
-         "register" => [
-            "controller" => "SecurityController",
-            "action" => "register"
-        ]
+        "dashboard" => [ // Dashboard przejmuje EventController
+            "controller" => "EventController",
+            "action" => "dashboard"
+        ],
+        "add-event" => [ // Formularz dodawania
+            "controller" => "EventController",
+            "action" => "addEvent"
+        ],
+        "admin" => [ 
+            "controller" => "AdminController", 
+            "action" => "admin" 
+        ],
+        "addUniversity" => [ 
+            "controller" => "AdminController", 
+            "action" => "addUniversity" 
+        ],
+        "login" => [ 
+            "controller" => "SecurityController", 
+            "action" => "login" 
+        ],
+        "register" => [ 
+            "controller" => "SecurityController", 
+            "action" => "register" 
+        ],
+        "edit-event" => [
+            "controller" => "EventController",
+            "action" => "editEvent"
+        ],
+        "delete-event" => [
+            "controller" => "EventController",
+            "action" => "deleteEvent"
+        ],
+        "search" => [
+        "controller" => "EventController",
+        "action" => "search"
+        ],
     ];
 
     public static function run(string $path) {
@@ -38,11 +62,8 @@ class Routing {
             $object = new $controller;
             $object->$action();
         } 
-        elseif ($path === 'dashboard') {
-             include 'public/views/dashboard.html';
-        }
         else {
-            include 'public/views/landing.html';
+            include 'public/views/landing.html'; // Domyślny widok
         }
     }
 }

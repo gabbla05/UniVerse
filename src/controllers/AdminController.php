@@ -60,18 +60,20 @@ class AdminController extends AppController {
         }
 
         // 3. Dodaj admina uczelni
+        $hashedAdminPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+
         $uniAdmin = new User(
             $adminEmail, 
-            $adminPassword, 
+            $hashedAdminPassword, // Przekazujemy zahaszowane
             $adminName, 
             $adminSurname,
-            null,       // student_id
-            $newUniId,  // university_id
-            null,       // faculty_id
-            'uni_admin' // role
+            null,       
+            $newUniId,  
+            null,       
+            'uni_admin' 
         );
 
-        $this->userRepository->addUser($uniAdmin);
+        $this->userRepository->addUser($uniAdmin);;
 
         // Odśwież stronę po dodaniu
         $url = "http://$_SERVER[HTTP_HOST]";

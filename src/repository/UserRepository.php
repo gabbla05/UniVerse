@@ -19,15 +19,16 @@ class UserRepository extends Repository {
             return null;
         }
 
-        // Zwracamy pełnego usera z bazy
         return new User(
             $user['email'],
             $user['password'],
             $user['name'],
             $user['surname'],
-            $user['student_id'],    // mapowanie kolumny z bazy
+            $user['student_id'],
             $user['university_id'],
-            $user['faculty_id']
+            $user['faculty_id'],
+            $user['role'], // Przekazujemy rolę
+            $user['id']    // ZMIANA: Przekazujemy ID z bazy!
         );
     }
 
