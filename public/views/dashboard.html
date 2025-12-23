@@ -16,7 +16,10 @@
             <span class="logo-text">UniVerse</span>
         </div>
         <div class="nav-links">
-            <a href="/my-events" class="nav-item">My events</a>
+            
+            <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
+                <a href="/my-events" class="nav-item">My events</a>
+            <?php endif; ?>
             
             <div class="user-menu">
                 <span style="color: var(--text-gray); font-size: 0.9rem; margin-right: 15px;">

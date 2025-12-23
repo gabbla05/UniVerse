@@ -17,44 +17,34 @@ class EventRepository extends Repository {
             $event->getImage(),
             $event->getDate(),
             $event->getLocation(),
-            $event->getCategory(), // Zapisujemy kategorię
+            $event->getCategory(),
             $event->getUniversityId(),
             $event->getCreatorId()
         ]);
     }
 
-    public function getEvents(): array {
+    public function getEvents(int $universityId): array {
         $result = [];
-        // Pobieramy wszystkie wydarzenia posortowane po dacie
         $stmt = $this->database->connect()->prepare('
-            SELECT * FROM events ORDER BY date ASC
+            SELECT * FROM events 
+            WHERE university_id = :uniId 
+            ORDER BY date ASC
         ');
+        $stmt->bindParam(':uniId', $universityId, PDO::PARAM_INT);
         $stmt->execute();
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($events as $event) {
-            // Tworzymy obiekt Event, uwzględniając nowe pole 'category'
             $evt = new Event(
-                $event['title'],
-                $event['description'],
-                $event['image_url'],
-                $event['date'],
-                $event['location'],
-                $event['category'], // Tutaj przekazujemy kategorię z bazy
-                $event['university_id'],
-                $event['creator_id']
+                $event['title'], $event['description'], $event['image_url'],
+                $event['date'], $event['location'], $event['category'],
+                $event['university_id'], $event['creator_id']
             );
-            
-            // Ustawiamy ID (które nie jest w konstruktorze)
             $evt->setId($event['id']);
-            
             $result[] = $evt;
         }
-
         return $result;
     }
-
-    // --- NOWE METODY ---
 
     public function getEvent(int $id): ?Event {
         $stmt = $this->database->connect()->prepare('SELECT * FROM events WHERE id = :id');
@@ -63,9 +53,7 @@ class EventRepository extends Repository {
 
         $event = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$event) {
-            return null;
-        }
+        if (!$event) return null;
 
         $evt = new Event(
             $event['title'],
@@ -73,7 +61,7 @@ class EventRepository extends Repository {
             $event['image_url'],
             $event['date'],
             $event['location'],
-            $event['category'], // <--- TU BRAKOWAŁO TEGO ARGUMENTU!
+            $event['category'],
             $event['university_id'],
             $event['creator_id']
         );
@@ -81,51 +69,39 @@ class EventRepository extends Repository {
         return $evt;
     }
 
-    public function getEventsByTitle(string $searchString) {
+    // --- KLUCZOWA METODA Z FILTROWANIEM PO UCZELNI ---
+    public function getEventsByTitle(string $searchString, int $userId, int $universityId) {
         $searchString = '%' . strtolower($searchString) . '%';
 
+        // 1. LEFT JOIN sprawdza czy user jest zapisany
+        // 2. WHERE e.university_id = :uniId filtruje wydarzenia tylko z Twojej uczelni!
         $stmt = $this->database->connect()->prepare('
-            SELECT * FROM events WHERE LOWER(title) LIKE :search OR LOWER(description) LIKE :search ORDER BY date ASC
+            SELECT e.*, 
+                   (CASE WHEN ep.user_id IS NOT NULL THEN true ELSE false END) as is_joined
+            FROM events e
+            LEFT JOIN event_participants ep ON e.id = ep.event_id AND ep.user_id = :userid
+            WHERE (LOWER(e.title) LIKE :search OR LOWER(e.description) LIKE :search)
+            AND e.university_id = :uniId
+            ORDER BY e.date ASC
         ');
         
         $stmt->bindParam(':search', $searchString, PDO::PARAM_STR);
+        $stmt->bindParam(':userid', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':uniId', $universityId, PDO::PARAM_INT); // Wiązanie ID uczelni
         $stmt->execute();
-        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $result = [];
-        foreach ($events as $event) {
-            $evt = new Event(
-                $event['title'],
-                $event['description'],
-                $event['image_url'],
-                $event['date'],
-                $event['location'],
-                $event['category'], // Pobieramy z bazy
-                $event['university_id'],
-                $event['creator_id']
-            );
-            $evt->setId($event['id']);
-            $result[] = $evt;
-        }
-        return $result;
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function updateEvent(int $id, Event $event) {
-        // ZMIANA: Dodano "category = ?" do zapytania SQL
         $stmt = $this->database->connect()->prepare('
             UPDATE events 
             SET title = ?, description = ?, image_url = ?, date = ?, location = ?, category = ?
             WHERE id = ?
         ');
-
         $stmt->execute([
-            $event->getTitle(),
-            $event->getDescription(),
-            $event->getImage(),
-            $event->getDate(),
-            $event->getLocation(),
-            $event->getCategory(), // Przekazujemy nową kategorię do bazy
-            $id
+            $event->getTitle(), $event->getDescription(), $event->getImage(),
+            $event->getDate(), $event->getLocation(), $event->getCategory(), $id
         ]);
     }
 
@@ -133,5 +109,21 @@ class EventRepository extends Repository {
         $stmt = $this->database->connect()->prepare('DELETE FROM events WHERE id = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+    }
+
+    // Metody do zapisu (Join/Leave)
+    public function joinEvent(int $userId, int $eventId) {
+        $stmt = $this->database->connect()->prepare('
+            INSERT INTO event_participants (user_id, event_id) VALUES (?, ?) 
+            ON CONFLICT DO NOTHING
+        ');
+        $stmt->execute([$userId, $eventId]);
+    }
+
+    public function leaveEvent(int $userId, int $eventId) {
+        $stmt = $this->database->connect()->prepare('
+            DELETE FROM event_participants WHERE user_id = ? AND event_id = ?
+        ');
+        $stmt->execute([$userId, $eventId]);
     }
 }

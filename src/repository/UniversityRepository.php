@@ -72,24 +72,6 @@ class UniversityRepository extends Repository {
         $stmt->execute();
     }
 
-    public function getUniversity(int $id): ?University {
-        $stmt = $this->database->connect()->prepare('SELECT * FROM universities WHERE id = :id');
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $uni = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$uni) return null;
-
-        return new University($uni['id'], $uni['name'], $uni['city']);
-    }
-
-    public function updateUniversity(int $id, string $name, string $city) {
-        $stmt = $this->database->connect()->prepare('
-            UPDATE universities SET name = ?, city = ? WHERE id = ?
-        ');
-        $stmt->execute([$name, $city, $id]);
-    }
-
     public function getUniversityDetails(int $id): array {
         // 1. Pobierz dane uczelni
         $stmt = $this->database->connect()->prepare('SELECT * FROM universities WHERE id = :id');
@@ -121,6 +103,46 @@ class UniversityRepository extends Repository {
             'admin' => $admin, // może być false jeśli brak admina
             'faculties' => implode(', ', $faculties) // Zamieniamy tablicę na string "Wydział A, Wydział B" do textarea
         ];
+    }
+
+    public function getUniversitiesByString(string $searchString): array {
+        $searchString = '%' . strtolower($searchString) . '%';
+        $result = [];
+
+        $stmt = $this->database->connect()->prepare('
+            SELECT 
+                u.id, 
+                u.name, 
+                u.city,
+                CONCAT(usr.name, \' \', usr.surname) as admin_full_name,
+                STRING_AGG(f.name, \'|\') as faculties_list
+            FROM universities u
+            LEFT JOIN users usr ON u.id = usr.university_id AND usr.role = \'uni_admin\'
+            LEFT JOIN faculties f ON u.id = f.university_id
+            WHERE LOWER(u.name) LIKE :search OR LOWER(u.city) LIKE :search
+            GROUP BY u.id, u.name, u.city, usr.name, usr.surname
+            ORDER BY u.id ASC
+        ');
+        
+        $stmt->bindParam(':search', $searchString, PDO::PARAM_STR);
+        $stmt->execute();
+        $universities = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($universities as $university) {
+            $facultiesArray = $university['faculties_list'] 
+                ? explode('|', $university['faculties_list']) 
+                : [];
+
+            $result[] = new University(
+                $university['id'],
+                $university['name'],
+                $university['city'],
+                $university['admin_full_name'] ?? 'No Admin',
+                $facultiesArray
+            );
+        }
+
+        return $result;
     }
 
     // Nowa metoda do zapisu wszystkiego naraz
@@ -189,4 +211,13 @@ class UniversityRepository extends Repository {
             throw $e;
         }
     }
+
+    public function updateUniversity(int $id, string $name, string $city) {
+        $stmt = $this->database->connect()->prepare('
+            UPDATE universities SET name = ?, city = ? WHERE id = ?
+        ');
+        $stmt->execute([$name, $city, $id]);
+    }
+
+    
 }

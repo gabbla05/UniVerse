@@ -330,6 +330,33 @@ a.action-btn {
     background-color: rgba(239, 68, 68, 0.1);
 }
 
+.search-bar {
+    position: relative;
+    width: 300px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    background-color: var(--bg-card);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-bar input:focus {
+    border-color: var(--accent-neon);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-gray);
+}
 
 /* RESPANSYWNOŚĆ */
 @media screen and (max-width: 1024px) {

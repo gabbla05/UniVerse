@@ -67,6 +67,10 @@ class Routing {
         "edit-university" => [ // NOWA TRASA
             "controller" => "AdminController",
             "action" => "editUniversity"
+        ],
+        "search-universities" => [
+            "controller" => "AdminController",
+            "action" => "searchUniversities"
         ]
     ];
 

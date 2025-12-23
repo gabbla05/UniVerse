@@ -19,7 +19,14 @@ class EventController extends AppController {
 
     public function dashboard() {
         session_start();
-        $events = $this->eventRepository->getEvents();
+        
+        // Pobieramy ID uczelni zalogowanego użytkownika
+        // Jeśli z jakiegoś powodu go nie ma (np. błąd sesji), dajemy 0, żeby nie pokazać nic
+        $universityId = $_SESSION['user_university_id'] ?? 0;
+        
+        // Przekazujemy ID do repozytorium
+        $events = $this->eventRepository->getEvents($universityId);
+        
         $this->render('dashboard', ['events' => $events]);
     }
 
@@ -39,14 +46,13 @@ class EventController extends AppController {
                 dirname(__DIR__).self::UPLOAD_DIRECTORY.$_FILES['file']['name']
             );
 
-            // ZMIANA: Dodajemy $_POST['category']
             $event = new Event(
                 $_POST['title'],
                 $_POST['description'],
                 $_FILES['file']['name'],
                 $_POST['date'],
                 $_POST['location'],
-                $_POST['category'], // Odbieramy kategorię!
+                $_POST['category'],
                 $_SESSION['user_university_id'],
                 $_SESSION['user_id']
             );
@@ -59,8 +65,6 @@ class EventController extends AppController {
         }
         return $this->render('add_event', ['messages' => $this->messages]);
     }
-
-    // --- NOWE METODY ---
 
     public function editEvent() {
         session_start();
@@ -80,9 +84,8 @@ class EventController extends AppController {
         }
 
         if ($this->isPost()) {
-            $newImage = $event->getImage(); // Domyślnie stare zdjęcie
+            $newImage = $event->getImage();
 
-            // Jeśli przesłano nowe zdjęcie, podmień je
             if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
                 if ($this->validate($_FILES['file'])) {
                     move_uploaded_file(
@@ -125,7 +128,6 @@ class EventController extends AppController {
         $event = $this->eventRepository->getEvent($id);
         
         if ($event) {
-            // Usuń plik zdjęcia
             $imagePath = dirname(__DIR__) . self::UPLOAD_DIRECTORY . $event->getImage();
             if (file_exists($imagePath)) { unlink($imagePath); }
 
@@ -134,6 +136,69 @@ class EventController extends AppController {
         
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/dashboard");
+    }
+
+    // --- KLUCZOWA ZMIANA TUTAJ ---
+    public function search() {
+        session_start(); // Musimy mieć dostęp do sesji!
+        
+        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+
+        if (strpos($contentType, 'application/json') !== false) {
+            $content = trim(file_get_contents("php://input"));
+            $decoded = json_decode($content, true);
+
+            header('Content-Type: application/json');
+            http_response_code(200);
+
+            // 1. Pobieramy ID usera (do sprawdzania czy dołączył)
+            $userId = $_SESSION['user_id'] ?? 0;
+            
+            // 2. Pobieramy ID uczelni zalogowanego użytkownika
+            // Jeśli user nie jest zalogowany (np. na landingu), uniId może być null, wtedy nic nie zwróci (bezpiecznie)
+            $universityId = $_SESSION['user_university_id'] ?? 0;
+
+            // 3. Przekazujemy oba ID do repozytorium
+            $events = $this->eventRepository->getEventsByTitle($decoded['search'], $userId, $universityId);
+            
+            $eventsArray = [];
+            foreach ($events as $event) {
+                $eventsArray[] = [
+                    'id' => $event['id'],
+                    'title' => $event['title'],
+                    'date' => str_replace('T', ' ', $event['date']),
+                    'location' => $event['location'],
+                    'image' => $event['image_url'],
+                    'category' => $event['category'],
+                    'is_joined' => $event['is_joined'] // Flaga dla przycisków Join/Leave
+                ];
+            }
+
+            echo json_encode($eventsArray);
+        }
+    }
+
+    // Join / Leave methods
+    public function join() {
+        session_start();
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'user') {
+             header("Location: /dashboard"); return;
+        }
+        $eventId = $_GET['id'];
+        $userId = $_SESSION['user_id'];
+        $this->eventRepository->joinEvent($userId, $eventId);
+        header("Location: /dashboard");
+    }
+
+    public function leave() {
+        session_start();
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'user') {
+             header("Location: /dashboard"); return;
+        }
+        $eventId = $_GET['id'];
+        $userId = $_SESSION['user_id'];
+        $this->eventRepository->leaveEvent($userId, $eventId);
+        header("Location: /dashboard");
     }
 
     private function validate(array $file): bool {
@@ -146,39 +211,5 @@ class EventController extends AppController {
             return false;
         }
         return true;
-    }
-
-    // 2. NOWA METODA: API Search
-    public function search() {
-        // Pobieramy Content-Type
-        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
-
-        // ZMIANA: Sprawdzamy czy zawiera "application/json" zamiast sztywnego porównania
-        if (strpos($contentType, 'application/json') !== false) {
-            $content = trim(file_get_contents("php://input"));
-            $decoded = json_decode($content, true);
-
-            header('Content-Type: application/json');
-            http_response_code(200);
-
-            // Pobieramy eventy pasujące do wpisanej frazy
-            $events = $this->eventRepository->getEventsByTitle($decoded['search']);
-            
-            // Konwertujemy obiekty na tablicę, żeby wysłać jako JSON
-            // (Można to też zrobić implementując JsonSerializable w modelu)
-            $eventsArray = [];
-            foreach ($events as $event) {
-                $eventsArray[] = [
-                    'id' => $event->getId(),
-                    'title' => $event->getTitle(),
-                    'date' => str_replace('T', ' ', $event->getDate()),
-                    'location' => $event->getLocation(),
-                    'image' => $event->getImage(),
-                    'category' => $event->getCategory() // Ważne dla filtrów JS!
-                ];
-            }
-
-            echo json_encode($eventsArray);
-        }
     }
 }

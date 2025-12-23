@@ -100,7 +100,39 @@ class AdminController extends AppController {
         header("Location: {$url}/admin");
     }
 
-    // ... wewnątrz AdminController ...
+    public function searchUniversities() {
+        session_start();
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
+             http_response_code(403);
+             return;
+        }
+
+        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+
+        if (strpos($contentType, 'application/json') !== false) {
+            $content = trim(file_get_contents("php://input"));
+            $decoded = json_decode($content, true);
+
+            header('Content-Type: application/json');
+            http_response_code(200);
+
+            $universities = $this->universityRepository->getUniversitiesByString($decoded['search']);
+            
+            // Konwersja obiektów na tablicę dla JSON
+            $data = [];
+            foreach ($universities as $uni) {
+                $data[] = [
+                    'id' => $uni->getId(),
+                    'name' => $uni->getName(),
+                    'city' => $uni->getCity(),
+                    'admin_name' => $uni->getAdminName(),
+                    'faculties' => $uni->getFaculties() // To jest tablica
+                ];
+            }
+
+            echo json_encode($data);
+        }
+    }
 
     public function editUniversity() {
         session_start();
