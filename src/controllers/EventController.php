@@ -12,9 +12,11 @@ class EventController extends AppController {
 
     private $messages = [];
     private $eventRepository;
+    private $universityRepository;
 
     public function __construct() {
         $this->eventRepository = new EventRepository();
+        $this->universityRepository = new UniversityRepository();
     }
 
     public function dashboard() {
@@ -33,18 +35,24 @@ class EventController extends AppController {
     public function addEvent() {
         session_start();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
-             $url = "http://$_SERVER[HTTP_HOST]";
-             header("Location: {$url}/dashboard");
-             return;
+             header("Location: /dashboard"); return;
         }
 
-        if ($this->isGet()) { return $this->render('add_event'); }
+        // GET: Wyświetl formularz + Lista Wydziałów
+        if ($this->isGet()) {
+            $faculties = $this->universityRepository->getFacultiesForSelect($_SESSION['user_university_id']);
+            return $this->render('add_event', ['faculties' => $faculties]);
+        }
 
+        // POST: Dodaj
         if (isset($_FILES['file']) && $this->validate($_FILES['file'])) {
             move_uploaded_file(
                 $_FILES['file']['tmp_name'], 
                 dirname(__DIR__).self::UPLOAD_DIRECTORY.$_FILES['file']['name']
             );
+
+            // Obsługa wydziału: jeśli wybrano "All" (pusty string), wstaw NULL
+            $facultyId = !empty($_POST['faculty']) ? $_POST['faculty'] : null;
 
             $event = new Event(
                 $_POST['title'],
@@ -54,38 +62,36 @@ class EventController extends AppController {
                 $_POST['location'],
                 $_POST['category'],
                 $_SESSION['user_university_id'],
+                $facultyId, // <-- Przekazujemy wydział
                 $_SESSION['user_id']
             );
 
             $this->eventRepository->addEvent($event);
-            
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/dashboard");
+            header("Location: /dashboard");
             return;
         }
-        return $this->render('add_event', ['messages' => $this->messages]);
+        
+        // W razie błędu walidacji też musimy podać wydziały
+        $faculties = $this->universityRepository->getFacultiesForSelect($_SESSION['user_university_id']);
+        return $this->render('add_event', ['messages' => $this->messages, 'faculties' => $faculties]);
     }
 
     public function editEvent() {
         session_start();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
-             $url = "http://$_SERVER[HTTP_HOST]";
-             header("Location: {$url}/dashboard");
-             return;
+             header("Location: /dashboard"); return;
         }
 
         $id = $_GET['id'];
-        if (!$id) { header("Location: /dashboard"); }
-
         $event = $this->eventRepository->getEvent($id);
 
         if ($this->isGet()) {
-            return $this->render('edit_event', ['event' => $event]);
+            $faculties = $this->universityRepository->getFacultiesForSelect($_SESSION['user_university_id']);
+            return $this->render('edit_event', ['event' => $event, 'faculties' => $faculties]);
         }
 
         if ($this->isPost()) {
             $newImage = $event->getImage();
-
             if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
                 if ($this->validate($_FILES['file'])) {
                     move_uploaded_file(
@@ -96,7 +102,7 @@ class EventController extends AppController {
                 }
             }
 
-            $newCategory = $_POST['category'];
+            $facultyId = !empty($_POST['faculty']) ? $_POST['faculty'] : null;
 
             $updatedEvent = new Event(
                 $_POST['title'],
@@ -104,15 +110,14 @@ class EventController extends AppController {
                 $newImage,
                 $_POST['date'],
                 $_POST['location'],
-                $newCategory,
+                $_POST['category'],
                 $event->getUniversityId(),
+                $facultyId, // <-- Update wydziału
                 $event->getCreatorId()
             );
 
             $this->eventRepository->updateEvent($id, $updatedEvent);
-            
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/dashboard");
+            header("Location: /dashboard");
         }
     }
 
@@ -138,10 +143,9 @@ class EventController extends AppController {
         header("Location: {$url}/dashboard");
     }
 
-    // --- KLUCZOWA ZMIANA TUTAJ ---
+    // --- SEARCH Z OBSŁUGĄ RÓL ---
     public function search() {
-        session_start(); // Musimy mieć dostęp do sesji!
-        
+        session_start();
         $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
 
         if (strpos($contentType, 'application/json') !== false) {
@@ -151,15 +155,17 @@ class EventController extends AppController {
             header('Content-Type: application/json');
             http_response_code(200);
 
-            // 1. Pobieramy ID usera (do sprawdzania czy dołączył)
             $userId = $_SESSION['user_id'] ?? 0;
-            
-            // 2. Pobieramy ID uczelni zalogowanego użytkownika
-            // Jeśli user nie jest zalogowany (np. na landingu), uniId może być null, wtedy nic nie zwróci (bezpiecznie)
             $universityId = $_SESSION['user_university_id'] ?? 0;
+            
+            // Jeśli to zwykły student, pobierz jego ID wydziału z sesji
+            // Jeśli admin, to facultyId = null (widzi wszystko)
+            $facultyId = null;
+            if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user') {
+                $facultyId = $_SESSION['user_faculty_id'] ?? null;
+            }
 
-            // 3. Przekazujemy oba ID do repozytorium
-            $events = $this->eventRepository->getEventsByTitle($decoded['search'], $userId, $universityId);
+            $events = $this->eventRepository->getEventsByTitle($decoded['search'], $userId, $universityId, $facultyId);
             
             $eventsArray = [];
             foreach ($events as $event) {
@@ -170,10 +176,9 @@ class EventController extends AppController {
                     'location' => $event['location'],
                     'image' => $event['image_url'],
                     'category' => $event['category'],
-                    'is_joined' => $event['is_joined'] // Flaga dla przycisków Join/Leave
+                    'is_joined' => $event['is_joined']
                 ];
             }
-
             echo json_encode($eventsArray);
         }
     }

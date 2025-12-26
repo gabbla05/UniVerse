@@ -219,5 +219,13 @@ class UniversityRepository extends Repository {
         $stmt->execute([$name, $city, $id]);
     }
 
-    
+    // Nowa metoda pomocnicza do pobierania listy wydziałów do selecta
+    public function getFacultiesForSelect(int $universityId): array {
+        $stmt = $this->database->connect()->prepare('
+            SELECT id, name FROM faculties WHERE university_id = :id ORDER BY name ASC
+        ');
+        $stmt->bindParam(':id', $universityId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

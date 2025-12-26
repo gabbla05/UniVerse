@@ -25,26 +25,50 @@
                     
                     <label>Event Title</label>
                     <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         <input name="title" type="text" value="<?= $event->getTitle(); ?>" required>
                     </div>
 
                     <label>Description</label>
-                    <textarea name="description" rows="5" style="width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem;"><?= $event->getDescription(); ?></textarea>
+                    <div class="input-group"> <textarea name="description" rows="5" style="width: 100%; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem; padding: 1rem;"><?= $event->getDescription(); ?></textarea>
+                    </div>
 
                     <div style="display: flex; gap: 20px;">
                         <div style="flex: 1;">
                             <label>Date & Time</label>
-                            <input name="date" type="datetime-local" value="<?= date('Y-m-d\TH:i', strtotime($event->getDate())); ?>" required>
+                            <div class="input-group">
+                                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                <input name="date" type="datetime-local" value="<?= date('Y-m-d\TH:i', strtotime($event->getDate())); ?>" required>
+                            </div>
                         </div>
+                        
                         <div style="flex: 1;">
                             <label>Location</label>
-                            <input name="location" type="text" value="<?= $event->getLocation(); ?>" required>
+                            <div class="input-group">
+                                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                <input name="location" type="text" value="<?= $event->getLocation(); ?>" required>
+                            </div>
                         </div>
                     </div>
 
+                    <label>Audience</label>
+                    <div class="input-group">
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        <select name="faculty" style="width: 100%; padding: 1rem 1rem 1rem 3.5rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; appearance: none;">
+                            <option value="">All Faculties (University-wide)</option>
+                            <?php if(isset($faculties)): ?>
+                                <?php foreach($faculties as $faculty): ?>
+                                    <option value="<?= $faculty['id']; ?>" <?= $event->getFacultyId() == $faculty['id'] ? 'selected' : ''; ?>>
+                                        <?= $faculty['name']; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    
                     <label>Category</label>
                     <div class="input-group">
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
                         <select name="category" required style="width: 100%; padding: 1rem 1rem 1rem 3.5rem; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; appearance: none;">
                             <option value="Workshops" <?= $event->getCategory() == 'Workshops' ? 'selected' : '' ?>>Workshops</option>
                             <option value="Parties" <?= $event->getCategory() == 'Parties' ? 'selected' : '' ?>>Parties</option>
@@ -55,8 +79,14 @@
 
                     <label style="margin-top: 1.5rem;">Update Image (Optional)</label>
                     <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 2rem;">
-                        <img src="/public/uploads/<?= $event->getImage(); ?>" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--input-border);">
-                        <input name="file" type="file" accept="image/*" style="color: var(--text-gray);">
+                        <?php if($event->getImage()): ?>
+                            <img src="/public/uploads/<?= $event->getImage(); ?>" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--input-border);">
+                        <?php endif; ?>
+                        
+                        <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                            <input name="file" type="file" accept="image/*" style="color: var(--text-gray);">
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-add">Save Changes</button>

@@ -41,7 +41,8 @@ class SecurityController extends AppController {
         $_SESSION['user_email'] = $user->getEmail();
         $_SESSION['user_role'] = $user->getRole();
         $_SESSION['user_university_id'] = $user->getUniversityId();
-        
+        $_SESSION['user_faculty_id'] = $user->getFacultyId();
+
         $url = "http://$_SERVER[HTTP_HOST]";
         
         if ($user->getRole() === 'app_admin') {

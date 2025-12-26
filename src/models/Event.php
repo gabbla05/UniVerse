@@ -7,11 +7,12 @@ class Event {
     private $image;
     private $date;
     private $location;
-    private $category; // NOWE POLE
+    private $category; 
     private $universityId;
+    private $facultyId;
     private $creatorId;
 
-    public function __construct($title, $description, $image, $date, $location, $category, $universityId, $creatorId) {
+    public function __construct($title, $description, $image, $date, $location, $category, $universityId, $facultyId, $creatorId) {
         $this->title = $title;
         $this->description = $description;
         $this->image = $image;
@@ -19,6 +20,7 @@ class Event {
         $this->location = $location;
         $this->category = $category; // Przypisanie
         $this->universityId = $universityId;
+        $this->facultyId = $facultyId;
         $this->creatorId = $creatorId;
     }
 
@@ -30,7 +32,8 @@ class Event {
     public function getImage() { return $this->image; }
     public function getDate() { return $this->date; }
     public function getLocation() { return $this->location; }
-    public function getCategory() { return $this->category; } // NOWY GETTER
+    public function getCategory() { return $this->category; } 
     public function getUniversityId() { return $this->universityId; }
+    public function getFacultyId() { return $this->facultyId; }
     public function getCreatorId() { return $this->creatorId; }
 }
