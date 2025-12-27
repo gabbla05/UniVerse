@@ -3,6 +3,7 @@
 require_once 'AppController.php';
 require_once __DIR__ .'/../models/Event.php';
 require_once __DIR__ .'/../repository/EventRepository.php';
+require_once __DIR__ .'/../services/EmailService.php';
 
 class EventController extends AppController {
 
@@ -193,15 +194,39 @@ class EventController extends AppController {
             echo json_encode($eventsArray);
         }
     }
-    // Join / Leave methods
+    
     public function join() {
         session_start();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'user') {
              header("Location: /dashboard"); return;
         }
+        
         $eventId = $_GET['id'];
         $userId = $_SESSION['user_id'];
+        
+        // 1. Zapisz w bazie
         $this->eventRepository->joinEvent($userId, $eventId);
+        
+        // --- 2. WYSYŁKA MAILA (DODANE) ---
+        
+        // Pobieramy dane do powiadomienia
+        $userEmail = $_SESSION['user_email']; // Email studenta z sesji
+        $event = $this->eventRepository->getEvent($eventId); // Szczegóły wydarzenia
+        
+        // Sprawdzamy czy user chce powiadomienia (pobieramy z sesji, domyślnie true)
+        $wantsEmails = $_SESSION['email_notifications'] ?? true; 
+
+        if ($wantsEmails && $event) {
+            $subject = "Confirmation: You joined " . $event->getTitle();
+            $body = "Hello!\n\nYou have successfully signed up for the event: " . $event->getTitle() . ".\n";
+            $body .= "Date: " . str_replace('T', ' ', $event->getDate()) . "\n";
+            $body .= "Location: " . $event->getLocation() . "\n\nSee you there!";
+            
+            // Wywołujemy nasz serwis
+            EmailService::send($userEmail, $subject, $body);
+        }
+        // ---------------------------------
+
         header("Location: /dashboard");
     }
 
@@ -255,15 +280,17 @@ class EventController extends AppController {
 
     public function profile() {
         session_start();
-        // Tylko zalogowany
         if (!isset($_SESSION['user_id'])) { header("Location: /login"); return; }
 
         $userId = $_SESSION['user_id'];
         $myEvents = $this->eventRepository->getJoinedEvents($userId);
+        
         $user = [
             'name' => $_SESSION['user_name'] ?? 'Student',
             'surname' => $_SESSION['user_surname'] ?? '',
-            'email' => $_SESSION['user_email']
+            'email' => $_SESSION['user_email'],
+            // DODAJEMY TO POLE: (Domyślnie true, jeśli nie ma w sesji)
+            'email_notifications' => $_SESSION['email_notifications'] ?? true 
         ];
 
         $this->render('profile', ['user' => $user, 'events' => $myEvents]);
