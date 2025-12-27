@@ -143,7 +143,7 @@ class EventController extends AppController {
         header("Location: {$url}/dashboard");
     }
 
-    // --- SEARCH Z OBSŁUGĄ RÓL ---
+    // --- ZMODYFIKOWANA METODA SEARCH ---
     public function search() {
         session_start();
         $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
@@ -158,14 +158,21 @@ class EventController extends AppController {
             $userId = $_SESSION['user_id'] ?? 0;
             $universityId = $_SESSION['user_university_id'] ?? 0;
             
-            // Jeśli to zwykły student, pobierz jego ID wydziału z sesji
-            // Jeśli admin, to facultyId = null (widzi wszystko)
-            $facultyId = null;
+            // Pobieramy flagę archiwum (domyślnie false)
+            $isArchive = isset($decoded['isArchive']) && $decoded['isArchive'] === true;
+
+            // ZABEZPIECZENIE: Student nie może przeglądać archiwum
+            // Jeśli user to student, wymuszamy isArchive = false
             if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user') {
+                $isArchive = false;
                 $facultyId = $_SESSION['user_faculty_id'] ?? null;
+            } else {
+                // Admin widzi wszystko (facultyId = null) i może widzieć archiwum
+                $facultyId = null;
             }
 
-            $events = $this->eventRepository->getEventsByTitle($decoded['search'], $userId, $universityId, $facultyId);
+            // Przekazujemy $isArchive do repozytorium
+            $events = $this->eventRepository->getEventsByTitle($decoded['search'], $userId, $universityId, $facultyId, $isArchive);
             
             $eventsArray = [];
             foreach ($events as $event) {
@@ -182,7 +189,6 @@ class EventController extends AppController {
             echo json_encode($eventsArray);
         }
     }
-
     // Join / Leave methods
     public function join() {
         session_start();

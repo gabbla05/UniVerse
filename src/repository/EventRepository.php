@@ -24,11 +24,15 @@ class EventRepository extends Repository {
         ]);
     }
 
+    // ZMIANA: Domyślnie pobieramy tylko NADCHODZĄCE (plus 24h wstecz)
     public function getEvents(int $universityId): array {
         $result = [];
-        $stmt = $this->database->connect()->prepare('
-            SELECT * FROM events WHERE university_id = :uniId ORDER BY date ASC
-        ');
+        $stmt = $this->database->connect()->prepare("
+            SELECT * FROM events 
+            WHERE university_id = :uniId 
+            AND date > (NOW() - INTERVAL '1 DAY')
+            ORDER BY date ASC
+        ");
         $stmt->bindParam(':uniId', $universityId, PDO::PARAM_INT);
         $stmt->execute();
         $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -75,7 +79,9 @@ class EventRepository extends Repository {
         return $evt;
     }
 
-    public function getEventsByTitle(string $searchString, int $userId, int $universityId, ?int $facultyId = null) {
+    // --- ZMODYFIKOWANA METODA SEARCH ---
+    // Dodano parametr $isArchive
+    public function getEventsByTitle(string $searchString, int $userId, int $universityId, ?int $facultyId = null, bool $isArchive = false) {
         $searchString = '%' . strtolower($searchString) . '%';
 
         $sql = '
@@ -87,11 +93,28 @@ class EventRepository extends Repository {
             AND e.university_id = :uniId
         ';
 
+        // 1. FILTRACJA DATY (ARCHIWUM vs AKTUALNE)
+        if ($isArchive) {
+            // Archiwum: starsze niż 24h temu
+            $sql .= " AND e.date <= (NOW() - INTERVAL '1 DAY')";
+        } else {
+            // Aktualne: od teraz (minus 24h buforu, żeby nie znikały w trakcie trwania) w przyszłość
+            $sql .= " AND e.date > (NOW() - INTERVAL '1 DAY')";
+        }
+
+        // 2. FILTRACJA WYDZIAŁU
         if ($facultyId) {
             $sql .= ' AND (e.faculty_id IS NULL OR e.faculty_id = :facId)';
         }
 
-        $sql .= ' ORDER BY e.date ASC';
+        // 3. SORTOWANIE
+        if ($isArchive) {
+            // W archiwum chcemy widzieć "najświeższe starocie" na górze
+            $sql .= ' ORDER BY e.date DESC';
+        } else {
+            // W aktualnych chcemy "najbliższe" na górze
+            $sql .= ' ORDER BY e.date ASC';
+        }
 
         $stmt = $this->database->connect()->prepare($sql);
         

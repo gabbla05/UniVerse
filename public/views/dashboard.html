@@ -43,12 +43,17 @@
             <?php endif; ?>
         </div>
 
-        <div class="toolbar">
+        
+        </div><div class="toolbar">
             <div class="filters">
-                <button class="filter-btn active">All</button>
-                <button class="filter-btn">Workshops</button>
-                <button class="filter-btn">Parties</button>
-                <button class="filter-btn">Sport</button>
+                <button class="filter-btn active" data-category="All">All</button>
+                <button class="filter-btn" data-category="Workshops">Workshops</button>
+                <button class="filter-btn" data-category="Parties">Parties</button>
+                <button class="filter-btn" data-category="Sport">Sport</button>
+                
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
+                    <div style="width: 1px; height: 24px; background: #334155; margin: 0 10px;"></div> <button class="filter-btn" id="archive-btn" style="color: #ef4444; border-color: #ef4444;">Archive</button>
+                <?php endif; ?>
             </div>
             
             <div class="search-bar">
