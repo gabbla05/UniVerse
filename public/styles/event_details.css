@@ -1,0 +1,156 @@
+
+
+.details-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 4rem;
+    min-height: calc(100vh - 80px);
+}
+
+/* --- HERO BANNER (Wielkie zdjęcie) --- */
+.hero-banner {
+    width: 100%;
+    height: 400px;
+    background-color: var(--bg-card);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--input-border);
+    position: relative;
+}
+
+.hero-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- UKŁAD DWUKOLUMNOWY --- */
+.content-split {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+}
+
+/* --- LEWA STRONA (OPIS) --- */
+.desc-section h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-white);
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+.category-tag {
+    color: var(--accent-neon);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.desc-text {
+    color: var(--text-gray);
+    line-height: 1.8;
+    font-size: 1.1rem;
+    white-space: pre-wrap;
+}
+
+/* --- PRAWA STRONA (PANEL SZCZEGÓŁÓW) --- */
+.info-card {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid var(--input-border);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.info-card h3 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--text-white);
+}
+
+.info-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+}
+
+.info-icon {
+    color: var(--accent-neon);
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.info-data strong {
+    display: block;
+    color: var(--text-white);
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.info-data span {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+/* --- PRZYCISKI (Take Part / Leave) --- */
+.btn-action {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    text-decoration: none;
+    margin-top: 2rem;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-action.join {
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    border: none;
+    box-shadow: 0 0 15px rgba(61, 223, 255, 0.2);
+}
+
+.btn-action.join:hover {
+    background-color: var(--text-white);
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(61, 223, 255, 0.4);
+}
+
+.btn-action.leave {
+    background-color: transparent;
+    border: 2px solid #ef4444;
+    color: #ef4444;
+}
+
+.btn-action.leave:hover {
+    background-color: #ef4444;
+    color: white;
+}
+
+@media (max-width: 900px) {
+    .content-split { grid-template-columns: 1fr; }
+    .hero-banner { height: 250px; }
+    .info-card { position: static; }
+}

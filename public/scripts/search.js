@@ -1,15 +1,16 @@
 const search = document.querySelector('input[placeholder="Search"]');
 const eventContainer = document.querySelector('.events-grid');
-const filterButtons = document.querySelectorAll('.filter-btn:not(#archive-btn)'); // Zwykłe filtry
-const archiveBtn = document.getElementById('archive-btn'); // Przycisk archiwum (może nie istnieć u studenta)
+const filterButtons = document.querySelectorAll('.filter-btn:not(#archive-btn)');
+const archiveBtn = document.getElementById('archive-btn');
 
 let currentCategory = 'All'; 
-let isArchiveMode = false; // Nowa flaga stanu
+let isArchiveMode = false;
 
+// Funkcja pobierająca wydarzenia
 function fetchEvents(query = "") {
     const data = {
         search: query,
-        isArchive: isArchiveMode // Wysyłamy stan do backendu
+        isArchive: isArchiveMode
     };
 
     fetch("/search", {
@@ -24,67 +25,53 @@ function fetchEvents(query = "") {
     .catch(error => console.error('Error fetching events:', error));
 }
 
-// Start
+// Uruchomienie przy starcie
 document.addEventListener("DOMContentLoaded", () => {
     fetchEvents(""); 
 });
 
-// Szukanie
+// Obsługa wyszukiwarki
 search.addEventListener("keyup", function (event) {
     if (event.key === "Enter") event.preventDefault();
     fetchEvents(this.value);
 });
 
-// Kliknięcie w zwykłe filtry (All, Sport...)
+// Obsługa filtrów kategorii
 filterButtons.forEach(button => {
     button.addEventListener('click', function() {
-        // Wyłącz tryb archiwum, jeśli był włączony
         if (isArchiveMode) {
             isArchiveMode = false;
-            if(archiveBtn) archiveBtn.classList.remove('active');
-            // Zmień styl przycisku archiwum na normalny
-            if(archiveBtn) archiveBtn.style.backgroundColor = "transparent";
-            if(archiveBtn) archiveBtn.style.color = "#ef4444";
+            if(archiveBtn) {
+                archiveBtn.classList.remove('active');
+                archiveBtn.style.backgroundColor = "transparent";
+                archiveBtn.style.color = "#ef4444";
+            }
         }
-
-        // Obsługa klas active
         filterButtons.forEach(btn => btn.classList.remove('active'));
         this.classList.add('active');
-
-        // Pobierz kategorię z tekstu przycisku
         currentCategory = this.innerText; 
-        
-        // Pobierz dane (backend zwróci aktualne wydarzenia)
         fetchEvents(search.value);
     });
 });
 
-// Kliknięcie w ARCHIWUM (tylko dla admina)
+// Obsługa archiwum
 if (archiveBtn) {
     archiveBtn.addEventListener('click', function() {
-        // Włącz tryb archiwum
         isArchiveMode = true;
-        
-        // Deaktywuj zwykłe filtry wizualnie
         filterButtons.forEach(btn => btn.classList.remove('active'));
-        
-        // Aktywuj przycisk archiwum (stylowanie na czerwono)
         this.classList.add('active');
         this.style.backgroundColor = "#ef4444";
         this.style.color = "white";
-
-        // Pobierz dane (backend zwróci stare wydarzenia)
         fetchEvents(search.value);
     });
 }
 
+// Renderowanie kafelków
 function renderEvents(events) {
     eventContainer.innerHTML = "";
 
-    // Filtrowanie po kategorii (client-side)
-    // Uwaga: W trybie archiwum też można filtrować po kategorii, jeśli chcemy
     const filteredEvents = events.filter(event => {
-        if (currentCategory === 'All' || isArchiveMode) return true; // W archiwum pokazujemy wszystko jak leci
+        if (currentCategory === 'All' || isArchiveMode) return true;
         return event.category === currentCategory;
     });
 
@@ -99,12 +86,16 @@ function renderEvents(events) {
     });
 }
 
+// Tworzenie pojedynczego kafelka
 function createEventCard(event) {
-    // Logika przycisków (Admin vs User)
+    // Debug: sprawdź w konsoli czy ID jest poprawne
+    // console.log("Rendering event:", event.id, event.title);
+
     let adminActions = '';
-    if (userRole === 'uni_admin') {
+    
+    if (typeof userRole !== 'undefined' && userRole === 'uni_admin') {
         adminActions = `
-            <div class="card-actions">
+            <div class="card-actions" style="z-index: 20;" onclick="event.preventDefault(); event.stopPropagation();">
                 <a href="/edit-event?id=${event.id}" class="icon-btn edit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 </a>
@@ -113,35 +104,31 @@ function createEventCard(event) {
                 </a>
             </div>
         `;
-    } else if (userRole === 'user' && !isArchiveMode) {
-        // Student widzi Join/Leave tylko w aktualnych wydarzeniach
-        if (event.is_joined) {
-            adminActions = `<a href="/leave-event?id=${event.id}" class="join-btn leave">Leave</a>`;
-        } else {
-            adminActions = `<a href="/join-event?id=${event.id}" class="join-btn join">Join</a>`;
-        }
     }
 
     let imageContent = event.image 
         ? `<img src="/public/uploads/${event.image}" alt="Event" style="width:100%; height:100%; object-fit:cover;">`
         : `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
 
-    // Dodanie klasy 'grayscale' dla archiwum (wizualny efekt - opcjonalne, ale fajne)
     const cardStyle = isArchiveMode ? 'filter: grayscale(100%); opacity: 0.8;' : '';
 
+    // ZMIANA: Używamy standardowego tagu <a> obejmującego całość
     const template = `
         <div class="event-card" style="position: relative; ${cardStyle}">
             ${adminActions}
-            <div class="card-image">
-                ${imageContent}
-            </div>
-            <div class="card-details">
-                <h3>${event.title}</h3>
-                <p class="event-date">${event.date}</p>
-                <p style="font-size: 0.8rem; color: #64748B; margin: 5px 0;">
-                    ${event.location}
-                </p>
-            </div>
+            
+            <a href="/event?id=${event.id}" class="card-link" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                <div class="card-image">
+                    ${imageContent}
+                </div>
+                <div class="card-details">
+                    <h3>${event.title}</h3>
+                    <p class="event-date">${event.date}</p>
+                    <p style="font-size: 0.8rem; color: #64748B; margin: 5px 0;">
+                        ${event.location}
+                    </p>
+                </div>
+            </a>
         </div>
     `;
     eventContainer.innerHTML += template;

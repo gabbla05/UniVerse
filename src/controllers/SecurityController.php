@@ -3,14 +3,17 @@
 require_once __DIR__ . '/AppController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../repository/UniversityRepository.php';
 
 class SecurityController extends AppController {
 
     private $userRepository;
+    private $universityRepository;
 
     public function __construct()
     {
         $this->userRepository = new UserRepository();
+        $this->universityRepository = new UniversityRepository();
     }
 
     public function login() 
@@ -56,7 +59,8 @@ class SecurityController extends AppController {
     public function register() 
     {
         if (!$this->isPost()) {
-            return $this->render('register');
+            $universities = $this->universityRepository->getUniversities();
+            return $this->render('register', ['universities' => $universities]);
         }
 
         $email = $_POST['email'];
@@ -90,5 +94,22 @@ class SecurityController extends AppController {
         
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/login");
+    }
+
+    public function getFaculties() {
+        $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+
+        if ($contentType === "application/json") {
+            $content = trim(file_get_contents("php://input"));
+            $decoded = json_decode($content, true);
+
+            header('Content-Type: application/json');
+            http_response_code(200);
+
+            $universityId = $decoded['id'];
+            $faculties = $this->universityRepository->getFacultiesForSelect($universityId);
+            
+            echo json_encode($faculties);
+        }
     }
 }

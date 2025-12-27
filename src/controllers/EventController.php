@@ -34,7 +34,8 @@ class EventController extends AppController {
     }
 
     $this->render('dashboard', ['events' => $events]);
-}
+    }
+
     public function addEvent() {
         session_start();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
@@ -228,35 +229,43 @@ class EventController extends AppController {
     }
 
     public function event() {
-    session_start();
-    if (!isset($_GET['id'])) { header("Location: /dashboard"); return; }
+        session_start();
+        
+        // Debug: Sprawdź czy ID w ogóle dociera
+        if (!isset($_GET['id'])) { 
+            die("BŁĄD: Brak ID w pasku adresu! URL powinien wyglądać np. /event?id=1"); 
+        }
+        
+        $eventId = $_GET['id'];
+        $userId = $_SESSION['user_id'] ?? 0;
 
-    $eventId = $_GET['id'];
-    // Jeśli user niezalogowany, traktujemy jako gościa (brak user_id)
-    $userId = $_SESSION['user_id'] ?? 0;
+        $event = $this->eventRepository->getEvent($eventId);
+        
+        if (!$event) {
+            // ZAMIAST PRZEKIEROWANIA - WYŚWIETL KOMUNIKAT
+            die("BŁĄD: Nie znaleziono w bazie wydarzenia o ID: " . htmlspecialchars($eventId));
+            
+            // header("Location: /dashboard"); // <--- To była przyczyna "powrotu"
+            // return;
+        }
 
-    $event = $this->eventRepository->getEvent($eventId);
-    if(!$event) { header("Location: /dashboard"); return; }
+        $isJoined = $this->eventRepository->isJoined($userId, $eventId);
+        $this->render('event_details', ['event' => $event, 'isJoined' => $isJoined]);
+    }
 
-    $isJoined = $this->eventRepository->isJoined($userId, $eventId);
+    public function profile() {
+        session_start();
+        // Tylko zalogowany
+        if (!isset($_SESSION['user_id'])) { header("Location: /login"); return; }
 
-    $this->render('event_details', ['event' => $event, 'isJoined' => $isJoined]);
-}
+        $userId = $_SESSION['user_id'];
+        $myEvents = $this->eventRepository->getJoinedEvents($userId);
+        $user = [
+            'name' => $_SESSION['user_name'] ?? 'Student',
+            'surname' => $_SESSION['user_surname'] ?? '',
+            'email' => $_SESSION['user_email']
+        ];
 
-public function profile() {
-    session_start();
-    // Tylko zalogowany
-    if (!isset($_SESSION['user_id'])) { header("Location: /login"); return; }
-
-    $userId = $_SESSION['user_id'];
-    $myEvents = $this->eventRepository->getJoinedEvents($userId);
-
-    $user = [
-        'name' => $_SESSION['user_name'] ?? 'Student',
-        'surname' => $_SESSION['user_surname'] ?? '',
-        'email' => $_SESSION['user_email']
-    ];
-
-    $this->render('profile', ['user' => $user, 'events' => $myEvents]);
-}
+        $this->render('profile', ['user' => $user, 'events' => $myEvents]);
+    }
 }

@@ -79,7 +79,11 @@ class Routing {
         "search-universities" => [
             "controller" => "AdminController",
             "action" => "searchUniversities"
-        ]
+        ],
+        "get-faculties" => [
+            "controller" => "SecurityController",
+            "action" => "getFaculties"
+        ],
     ];
 
     public static function run(string $path) {
