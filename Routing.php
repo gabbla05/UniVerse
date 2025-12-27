@@ -80,10 +80,18 @@ class Routing {
             "controller" => "AdminController",
             "action" => "searchUniversities"
         ],
+        "edit-profile" => [
+            "controller" => "SecurityController",
+            "action" => "editProfile"
+        ],
         "get-faculties" => [
             "controller" => "SecurityController",
             "action" => "getFaculties"
         ],
+        "event-participants" => [
+            "controller" => "AdminController",
+            "action" => "eventParticipants"
+        ]
     ];
 
     public static function run(string $path) {

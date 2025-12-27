@@ -88,14 +88,15 @@ function renderEvents(events) {
 
 // Tworzenie pojedynczego kafelka
 function createEventCard(event) {
-    // Debug: sprawdź w konsoli czy ID jest poprawne
-    // console.log("Rendering event:", event.id, event.title);
-
     let adminActions = '';
     
     if (typeof userRole !== 'undefined' && userRole === 'uni_admin') {
         adminActions = `
-            <div class="card-actions" style="z-index: 20;" onclick="event.preventDefault(); event.stopPropagation();">
+            <div class="card-actions" style="z-index: 20;" onclick="event.stopPropagation();">
+                <a href="/event-participants?id=${event.id}" class="icon-btn" title="Participants List" style="margin-right: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </a>
+
                 <a href="/edit-event?id=${event.id}" class="icon-btn edit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 </a>
@@ -112,7 +113,6 @@ function createEventCard(event) {
 
     const cardStyle = isArchiveMode ? 'filter: grayscale(100%); opacity: 0.8;' : '';
 
-    // ZMIANA: Używamy standardowego tagu <a> obejmującego całość
     const template = `
         <div class="event-card" style="position: relative; ${cardStyle}">
             ${adminActions}

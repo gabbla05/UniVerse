@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Participants List</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="/public/img/logo.png" class="logo-img">
+            <span class="logo-text">UniVerse</span>
+        </div>
+        <div class="nav-links">
+            <a href="/dashboard" class="nav-item">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="admin-container" style="display: block; padding-top: 2rem;">
+        <div class="header-row" style="margin-bottom: 2rem;">
+            <h1>Participants List</h1>
+            <p style="color: var(--text-gray);">Event: <strong style="color: white;"><?= $event->getTitle(); ?></strong></p>
+        </div>
+
+        <div class="table-container">
+            <?php if(empty($participants)): ?>
+                <div style="text-align: center; padding: 3rem; color: var(--text-gray);">
+                    <p>No participants signed up yet.</p>
+                </div>
+            <?php else: ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($participants as $i => $user): ?>
+                        <tr>
+                            <td><?= $i + 1; ?></td>
+                            <td><?= $user['name']; ?></td>
+                            <td><?= $user['surname']; ?></td>
+                            <td><?= $user['email']; ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+    </div>
+
+</body>
+</html>

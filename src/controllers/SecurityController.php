@@ -112,4 +112,60 @@ class SecurityController extends AppController {
             echo json_encode($faculties);
         }
     }
+
+    public function editProfile() {
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            return;
+        }
+
+        $userId = $_SESSION['user_id'];
+        $user = $this->userRepository->getUserById($userId);
+
+        if (!$this->isPost()) {
+            // GET: Wyświetl formularz z obecnymi danymi
+            return $this->render('edit_profile', ['user' => $user]);
+        }
+
+        // POST: Obsługa formularza
+        $name = $_POST['name'];
+        $surname = $_POST['surname'];
+        $password = $_POST['password']; // Nowe hasło (opcjonalne)
+        $passwordConfirm = $_POST['password_confirm'];
+        $oldPassword = $_POST['old_password']; // Stare hasło (wymagane do zmian hasła)
+
+        // 1. Aktualizacja danych osobowych (zawsze)
+        $this->userRepository->updateUserInfo($userId, $name, $surname);
+        
+        // Aktualizacja sesji, żeby zmiany były widoczne od razu
+        $_SESSION['user_name'] = $name;
+        $_SESSION['user_surname'] = $surname;
+
+        $messages = [];
+
+        // 2. Aktualizacja hasła (tylko jeśli podano)
+        if (!empty($password)) {
+            if (empty($oldPassword)) {
+                $messages[] = 'To change password, provide current password!';
+            } elseif (!password_verify($oldPassword, $user->getPassword())) {
+                $messages[] = 'Current password is incorrect!';
+            } elseif ($password !== $passwordConfirm) {
+                $messages[] = 'New passwords do not match!';
+            } else {
+                // Wszystko OK - zmieniamy hasło
+                $newHash = password_hash($password, PASSWORD_DEFAULT);
+                $this->userRepository->changePassword($userId, $newHash);
+                $messages[] = 'Password changed successfully.';
+            }
+        }
+
+        if (empty($messages) || $messages[0] === 'Password changed successfully.') {
+             // Przekierowanie z sukcesem
+             header("Location: /profile");
+        } else {
+             // Błąd - zostań w formularzu
+             return $this->render('edit_profile', ['user' => $user, 'messages' => $messages]);
+        }
+    }
 }

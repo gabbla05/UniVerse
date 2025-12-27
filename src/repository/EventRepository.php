@@ -226,4 +226,17 @@ class EventRepository extends Repository {
         $evt->setId($event['id']);
         return $evt;
     }
+
+    public function getEventParticipants(int $eventId): array {
+        $stmt = $this->database->connect()->prepare('
+            SELECT u.name, u.surname, u.email 
+            FROM users u
+            JOIN event_participants ep ON u.id = ep.user_id
+            WHERE ep.event_id = :id
+        ');
+        $stmt->bindParam(':id', $eventId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

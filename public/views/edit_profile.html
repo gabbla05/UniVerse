@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile - UniVerse</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="/public/img/logo.png" class="logo-img">
+            <span class="logo-text">UniVerse</span>
+        </div>
+        <a href="/profile" style="color: var(--text-gray); margin-right: 20px;">Cancel</a>
+    </nav>
+
+    <div class="admin-container" style="justify-content: center;">
+        <div class="form-section" style="max-width: 500px; flex: 1;">
+            <div class="form-card">
+                <h2>Edit Profile</h2>
+                <p class="subtitle">Update your personal information.</p>
+
+                <?php if(isset($messages)){ foreach($messages as $message) { echo "<p style='color: #ef4444; margin-bottom: 1rem;'>$message</p>"; } } ?>
+
+                <form action="edit-profile" method="POST">
+                    
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">Personal Data</h3>
+                    
+                    <label>Name</label>
+                    <div class="input-group">
+                        <input name="name" type="text" value="<?= $user->getName(); ?>" required>
+                    </div>
+
+                    <label>Surname</label>
+                    <div class="input-group">
+                        <input name="surname" type="text" value="<?= $user->getSurname(); ?>" required>
+                    </div>
+
+                    <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 2rem; margin-bottom: 10px; text-transform: uppercase;">Change Password</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-gray); margin-bottom: 15px;">Leave blank if you don't want to change it.</p>
+
+                    <label>New Password</label>
+                    <div class="input-group">
+                        <input name="password" type="password" placeholder="New password">
+                    </div>
+
+                    <label>Confirm New Password</label>
+                    <div class="input-group">
+                        <input name="password_confirm" type="password" placeholder="Confirm new password">
+                    </div>
+
+                    <label style="color: #F8FAFC;">Current Password (Required for changes)</label>
+                    <div class="input-group">
+                        <input name="old_password" type="password" placeholder="Enter current password to save" style="border-color: var(--text-gray);">
+                    </div>
+
+                    <button type="submit" class="btn-add" style="margin-top: 2rem;">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -51,4 +51,41 @@ class UserRepository extends Repository {
             $user->getRole() // Przekazujemy rolę (np. 'uni_admin')
         ]);
     }
+
+    // Metoda do zmiany danych (Imię, Nazwisko)
+    public function updateUserInfo(int $userId, string $name, string $surname) {
+        $stmt = $this->database->connect()->prepare('
+            UPDATE users SET name = :name, surname = :surname WHERE id = :id
+        ');
+        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':surname', $surname, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    // Metoda do zmiany hasła
+    public function changePassword(int $userId, string $newHashedPassword) {
+        $stmt = $this->database->connect()->prepare('
+            UPDATE users SET password = :password WHERE id = :id
+        ');
+        $stmt->bindParam(':password', $newHashedPassword, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+    
+    // Metoda do pobrania usera po ID (żeby sprawdzić stare hasło)
+    public function getUserById(int $id): ?User {
+        $stmt = $this->database->connect()->prepare('SELECT * FROM users WHERE id = :id');
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) return null;
+
+        return new User(
+            $user['email'], $user['password'], $user['name'], $user['surname'],
+            $user['student_id'], $user['university_id'], $user['faculty_id'],
+            $user['role'], $user['id']
+        );
+    }
 }
