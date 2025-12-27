@@ -20,18 +20,21 @@ class EventController extends AppController {
     }
 
     public function dashboard() {
-        session_start();
-        
-        // Pobieramy ID uczelni zalogowanego użytkownika
-        // Jeśli z jakiegoś powodu go nie ma (np. błąd sesji), dajemy 0, żeby nie pokazać nic
-        $universityId = $_SESSION['user_university_id'] ?? 0;
-        
-        // Przekazujemy ID do repozytorium
+    session_start();
+    $universityId = $_SESSION['user_university_id'] ?? 0;
+    $role = $_SESSION['user_role'] ?? 'guest';
+
+    if ($role === 'user') {
+        // Student widzi: Uczelniane + Wydziałowe
+        $facultyId = $_SESSION['user_faculty_id'] ?? 0;
+        $events = $this->eventRepository->getStudentEvents($universityId, $facultyId);
+    } else {
+        // Admin (i inni) widzi: Wszystko z uczelni (STARA LOGIKA)
         $events = $this->eventRepository->getEvents($universityId);
-        
-        $this->render('dashboard', ['events' => $events]);
     }
 
+    $this->render('dashboard', ['events' => $events]);
+}
     public function addEvent() {
         session_start();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
@@ -223,4 +226,37 @@ class EventController extends AppController {
         }
         return true;
     }
+
+    public function event() {
+    session_start();
+    if (!isset($_GET['id'])) { header("Location: /dashboard"); return; }
+
+    $eventId = $_GET['id'];
+    // Jeśli user niezalogowany, traktujemy jako gościa (brak user_id)
+    $userId = $_SESSION['user_id'] ?? 0;
+
+    $event = $this->eventRepository->getEvent($eventId);
+    if(!$event) { header("Location: /dashboard"); return; }
+
+    $isJoined = $this->eventRepository->isJoined($userId, $eventId);
+
+    $this->render('event_details', ['event' => $event, 'isJoined' => $isJoined]);
+}
+
+public function profile() {
+    session_start();
+    // Tylko zalogowany
+    if (!isset($_SESSION['user_id'])) { header("Location: /login"); return; }
+
+    $userId = $_SESSION['user_id'];
+    $myEvents = $this->eventRepository->getJoinedEvents($userId);
+
+    $user = [
+        'name' => $_SESSION['user_name'] ?? 'Student',
+        'surname' => $_SESSION['user_surname'] ?? '',
+        'email' => $_SESSION['user_email']
+    ];
+
+    $this->render('profile', ['user' => $user, 'events' => $myEvents]);
+}
 }

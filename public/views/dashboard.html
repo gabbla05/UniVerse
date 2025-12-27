@@ -18,7 +18,7 @@
         <div class="nav-links">
             
             <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
-                <a href="/my-events" class="nav-item">My events</a>
+                <a href="/profile" class="nav-item">My events</a>
             <?php endif; ?>
             
             <div class="user-menu">
@@ -43,8 +43,7 @@
             <?php endif; ?>
         </div>
 
-        
-        </div><div class="toolbar">
+        <div class="toolbar">
             <div class="filters">
                 <button class="filter-btn active" data-category="All">All</button>
                 <button class="filter-btn" data-category="Workshops">Workshops</button>
@@ -68,8 +67,10 @@
                 <p style="color: var(--text-gray); grid-column: 1/-1; text-align: center;">No upcoming events.</p>
             <?php else: ?>
                 <?php foreach($events as $event): ?>
-                <div class="event-card" style="position: relative;"> <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
-                        <div class="card-actions">
+                <div class="event-card" style="position: relative;"> 
+                    
+                    <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
+                        <div class="card-actions" style="z-index: 10;">
                             <a href="/edit-event?id=<?= $event->getId(); ?>" class="icon-btn edit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                             </a>
@@ -79,20 +80,23 @@
                         </div>
                     <?php endif; ?>
 
-                    <div class="card-image">
-                        <?php if($event->getImage()): ?>
-                            <img src="/public/uploads/<?= $event->getImage(); ?>" alt="Event" style="width:100%; height:100%; object-fit:cover;">
-                        <?php else: ?>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <?php endif; ?>
-                    </div>
-                    <div class="card-details">
-                        <h3><?= $event->getTitle(); ?></h3>
-                        <p class="event-date"><?= str_replace('T', ' ', $event->getDate()); ?></p>
-                        <p style="font-size: 0.8rem; color: #64748B; margin: 5px 0;">
-                            <?= $event->getLocation(); ?>
-                        </p>
-                    </div>
+                    <a href="/event?id=<?= $event->getId(); ?>" style="display: block; text-decoration: none; color: inherit;">
+                        <div class="card-image">
+                            <?php if($event->getImage()): ?>
+                                <img src="/public/uploads/<?= $event->getImage(); ?>" alt="Event" style="width:100%; height:100%; object-fit:cover;">
+                            <?php else: ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            <?php endif; ?>
+                        </div>
+                        <div class="card-details">
+                            <h3><?= $event->getTitle(); ?></h3>
+                            <p class="event-date"><?= str_replace('T', ' ', $event->getDate()); ?></p>
+                            <p style="font-size: 0.8rem; color: #64748B; margin: 5px 0;">
+                                <?= $event->getLocation(); ?>
+                            </p>
+                        </div>
+                    </a>
+
                 </div>
             <?php endforeach; ?>
             <?php endif; ?>
@@ -106,7 +110,3 @@
     <script src="/public/scripts/search.js"></script>
 </body>
 </html>
-
-
-    
- 

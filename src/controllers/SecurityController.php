@@ -37,9 +37,10 @@ class SecurityController extends AppController {
         
         // ZMIANA: Zapisujemy ID do sesji
         $_SESSION['user_id'] = $user->getId(); 
-        
         $_SESSION['user_email'] = $user->getEmail();
         $_SESSION['user_role'] = $user->getRole();
+        $_SESSION['user_name'] = $user->getName();
+        $_SESSION['user_surname'] = $user->getSurname();
         $_SESSION['user_university_id'] = $user->getUniversityId();
         $_SESSION['user_faculty_id'] = $user->getFacultyId();
 

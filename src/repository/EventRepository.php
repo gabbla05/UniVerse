@@ -164,4 +164,66 @@ class EventRepository extends Repository {
         ');
         $stmt->execute([$userId, $eventId]);
     }
+
+    // Dla studenta: Pokaż wydarzenia z jego uczelni (ogólne LUB jego wydziału)
+    public function getStudentEvents(int $universityId, int $facultyId): array {
+        $result = [];
+        $stmt = $this->database->connect()->prepare("
+            SELECT * FROM events 
+            WHERE university_id = :uniId 
+            AND (faculty_id IS NULL OR faculty_id = :facId)
+            AND date > (NOW() - INTERVAL '1 DAY')
+            ORDER BY date ASC
+        ");
+        
+        $stmt->bindParam(':uniId', $universityId, PDO::PARAM_INT);
+        $stmt->bindParam(':facId', $facultyId, PDO::PARAM_INT);
+        $stmt->execute();
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($events as $event) {
+            $result[] = $this->mapEvent($event);
+        }
+        return $result;
+    }
+
+    // Dla profilu: Pokaż wydarzenia, na które user się zapisał
+    public function getJoinedEvents(int $userId): array {
+        $result = [];
+        $stmt = $this->database->connect()->prepare('
+            SELECT e.* FROM events e
+            JOIN event_participants ep ON e.id = ep.event_id
+            WHERE ep.user_id = :userId
+            ORDER BY e.date ASC
+        ');
+        
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($events as $event) {
+            $result[] = $this->mapEvent($event);
+        }
+        return $result;
+    }
+
+    // Sprawdzenie czy user jest już zapisany (żeby wyświetlić guzik Join lub Leave)
+    public function isJoined(int $userId, int $eventId): bool {
+        $stmt = $this->database->connect()->prepare('
+            SELECT 1 FROM event_participants WHERE user_id = ? AND event_id = ?
+        ');
+        $stmt->execute([$userId, $eventId]);
+        return (bool)$stmt->fetch();
+    }
+
+    // Pomocnicza metoda, żeby nie powielać kodu tworzenia obiektu (opcjonalnie, można też kopiować kod z getEvents)
+    private function mapEvent(array $event): Event {
+        $evt = new Event(
+            $event['title'], $event['description'], $event['image_url'],
+            $event['date'], $event['location'], $event['category'],
+            $event['university_id'], $event['faculty_id'], $event['creator_id']
+        );
+        $evt->setId($event['id']);
+        return $evt;
+    }
 }

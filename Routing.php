@@ -20,6 +20,14 @@ class Routing {
             "controller" => "EventController",
             "action" => "dashboard"
         ],
+        "event" => [
+            "controller" => "EventController",
+            "action" => "event"
+        ],
+        "profile" => [
+            "controller" => "EventController",
+            "action" => "profile"
+        ],
         "add-event" => [ 
             "controller" => "EventController",
             "action" => "addEvent"

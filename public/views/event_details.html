@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><?= $event->getTitle(); ?> - UniVerse</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/dashboard.css">
+    <style>
+        .details-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .hero-banner { 
+            width: 100%; height: 350px; background-color: #1E293B; border-radius: 20px; 
+            overflow: hidden; margin-bottom: 3rem; border: 1px solid #334155;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .hero-banner img { width: 100%; height: 100%; object-fit: cover; }
+        .content-split { display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; }
+        .desc-section h1 { font-size: 3rem; margin-bottom: 1.5rem; color: white; }
+        .desc-text { color: #94A3B8; line-height: 1.8; font-size: 1.1rem; white-space: pre-wrap; }
+        .info-card {
+            background-color: #1E293B; border-radius: 16px; padding: 2rem;
+            border: 1px solid #334155; height: fit-content; position: sticky; top: 100px;
+        }
+        .info-card h3 { border-bottom: 1px solid #334155; padding-bottom: 1rem; margin-bottom: 1.5rem; margin-top: 0; color: white; }
+        .info-row { display: flex; gap: 15px; margin-bottom: 1.5rem; align-items: start; }
+        .info-icon { color: var(--accent-neon); width: 24px; font-size: 1.2rem; }
+        .info-data strong { display: block; color: white; margin-bottom: 4px; }
+        .info-data span { color: #94A3B8; font-size: 0.9rem; }
+        .btn-take-part {
+            display: block; width: 100%; text-align: center;
+            background-color: var(--accent-neon); color: var(--bg-dark);
+            font-weight: 800; padding: 1rem; border-radius: 8px;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;
+        }
+        .btn-take-part:hover { transform: scale(1.02); background-color: white; }
+        .btn-leave { background-color: transparent; border: 2px solid #ef4444; color: #ef4444; }
+        .btn-leave:hover { background-color: #ef4444; color: white; }
+        @media (max-width: 900px) { .content-split { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="/public/img/logo.png" class="logo-img">
+            <span class="logo-text">UniVerse</span>
+        </div>
+        <div class="nav-links">
+             <a href="/dashboard" class="nav-item">Back to events</a>
+             <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
+                <a href="/profile" class="nav-item">My events</a>
+             <?php endif; ?>
+        </div>
+    </nav>
+
+    <div class="details-container">
+        <div class="hero-banner">
+            <?php if($event->getImage()): ?>
+                <img src="/public/uploads/<?= $event->getImage(); ?>">
+            <?php else: ?>
+                <span style="color: #64748B;">No image</span>
+            <?php endif; ?>
+        </div>
+
+        <div class="content-split">
+            <div class="desc-section">
+                <p style="color: var(--accent-neon); margin-bottom: 0;">Events / <?= $event->getCategory(); ?></p>
+                <h1><?= $event->getTitle(); ?></h1>
+                <div class="desc-text"><?= nl2br($event->getDescription()); ?></div>
+            </div>
+
+            <div class="info-card">
+                <h3>Details</h3>
+                <div class="info-row">
+                    <div class="info-icon">📅</div>
+                    <div class="info-data">
+                        <strong>Date and hour</strong>
+                        <span><?= str_replace('T', ', ', $event->getDate()); ?></span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-icon">📍</div>
+                    <div class="info-data">
+                        <strong>Location</strong>
+                        <span><?= $event->getLocation(); ?></span>
+                    </div>
+                </div>
+                
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
+                    <?php if($isJoined): ?>
+                        <a href="/leave-event?id=<?= $event->getId(); ?>" class="btn-take-part btn-leave">LEAVE EVENT</a>
+                    <?php else: ?>
+                        <a href="/join-event?id=<?= $event->getId(); ?>" class="btn-take-part">TAKE PART</a>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
