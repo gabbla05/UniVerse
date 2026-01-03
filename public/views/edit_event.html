@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>UniVerse - Edit Event</title>
-    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
+<?php 
+    // Pobieramy tytuł wydarzenia, żeby wyświetlić go w karcie przeglądarki
+    $evtTitle = isset($event) ? $event->getTitle() : 'Event';
+    $pageTitle = 'Edit ' . $evtTitle . ' - UniVerse';
+    include 'public/views/shared/header.php';
+?>
+<link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
+
 <body>
     <nav class="navbar">
         <div class="logo-container">

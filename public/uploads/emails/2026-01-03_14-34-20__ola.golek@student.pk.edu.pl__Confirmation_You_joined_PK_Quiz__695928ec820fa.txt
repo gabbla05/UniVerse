@@ -1,0 +1,16 @@
+========================================
+TO: ola.golek@student.pk.edu.pl
+SUBJECT: Confirmation: You joined PK Quiz
+DATE: 2026-01-03 14:34:20
+========================================
+
+Hello!
+
+You have successfully signed up for the event: PK Quiz.
+Date: 2026-01-08 18:48:00
+Location: Klub Kwadrat
+
+See you there!
+
+========================================
+Sent via UniVerse Mock Mailer

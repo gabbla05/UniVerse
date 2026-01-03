@@ -1,3 +1,28 @@
+-- =============================================================
+-- 0. CZYSZCZENIE BAZY (RESET)
+-- Te komendy usuną stare tabele, widoki i funkcje przed utworzeniem nowych.
+-- =============================================================
+
+-- Usuwamy widoki
+DROP VIEW IF EXISTS vw_upcoming_events CASCADE;
+
+-- Usuwamy tabele (kolejność nie jest krytyczna dzięki CASCADE, ale warto zachować porządek)
+DROP TABLE IF EXISTS event_participants CASCADE;
+DROP TABLE IF EXISTS events_archive CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS faculties CASCADE;
+DROP TABLE IF EXISTS universities CASCADE;
+
+-- Usuwamy funkcje (Triggery usuwają się same wraz z tabelami, ale funkcje zostają)
+DROP FUNCTION IF EXISTS check_event_date_before_join CASCADE;
+DROP FUNCTION IF EXISTS archive_deleted_event CASCADE;
+DROP FUNCTION IF EXISTS validate_future_event_date CASCADE;
+
+-- =============================================================
+-- TWORZENIE NOWEJ STRUKTURY
+-- =============================================================
+
 -- 1. UCZELNIE
 CREATE TABLE universities (
     id SERIAL PRIMARY KEY,
@@ -65,9 +90,68 @@ JOIN universities u ON e.university_id = u.id
 LEFT JOIN faculties f ON e.faculty_id = f.id
 WHERE e.date >= NOW();
 
--- DANE TESTOWE (Żebyś miała na czym klikać)
-INSERT INTO universities (name, city) VALUES ('Politechnika Krakowska', 'Kraków');
-INSERT INTO faculties (name, university_id) VALUES ('Wydział Informatyki i Telekomunikacji', 1);
--- Hasło to 'admin' (hashowane md5 dla testu, w produkcji użyjemy password_hash w PHP)
-INSERT INTO users (email, password, name, surname, role, university_id, faculty_id) 
-VALUES ('admin@pk.edu.pl', '21232f297a57a5a743894a0e4a801fc3', 'Jan', 'Admin', 'uni_admin', 1, 1);
+-- 1. Funkcja sprawdzająca datę
+CREATE OR REPLACE FUNCTION check_event_date_before_join()
+RETURNS TRIGGER AS $$
+DECLARE
+    event_date TIMESTAMP;
+BEGIN
+    -- Pobierz datę wydarzenia, do którego user chce dołączyć
+    SELECT date INTO event_date FROM events WHERE id = NEW.event_id;
+
+    -- Jeśli data wydarzenia jest wcześniejsza niż TERAZ, rzuć błąd
+    IF event_date < NOW() THEN
+        RAISE EXCEPTION 'Cannot join an event that has already taken place.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Trigger podpięty pod tabelę event_participants
+CREATE TRIGGER trigger_prevent_joining_past_events
+BEFORE INSERT ON event_participants
+FOR EACH ROW
+EXECUTE FUNCTION check_event_date_before_join();
+
+-- 1. Tabela archiwalna (uproszczona kopia tabeli events)
+CREATE TABLE events_archive (
+    archive_id SERIAL PRIMARY KEY,
+    original_event_id INT,
+    title VARCHAR(255),
+    deletion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_by_user VARCHAR(50) -- Opcjonalnie, jeśli mamy info o userze w sesji DB
+);
+
+-- 2. Funkcja archiwizująca
+CREATE OR REPLACE FUNCTION archive_deleted_event()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO events_archive (original_event_id, title)
+    VALUES (OLD.id, OLD.title);
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 3. Trigger uruchamiany PO usunięciu
+CREATE TRIGGER trigger_archive_events
+AFTER DELETE ON events
+FOR EACH ROW
+EXECUTE FUNCTION archive_deleted_event();
+
+-- 1. Funkcja walidująca przyszłą datę
+CREATE OR REPLACE FUNCTION validate_future_event_date()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.date <= NOW() THEN
+        RAISE EXCEPTION 'Event date must be in the future.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Trigger przy INSERT i UPDATE na tabeli events
+CREATE TRIGGER trigger_validate_event_date
+BEFORE INSERT OR UPDATE ON events
+FOR EACH ROW
+EXECUTE FUNCTION validate_future_event_date();

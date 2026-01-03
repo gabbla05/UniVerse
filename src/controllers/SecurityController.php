@@ -36,7 +36,7 @@ class SecurityController extends AppController {
             return $this->render('login', ['messages' => ['Wrong password!']]);
         }
         
-        session_start();
+        $this->ensureSession();
         
         // ZMIANA: Zapisujemy ID do sesji
         $_SESSION['user_id'] = $user->getId(); 
@@ -88,7 +88,7 @@ class SecurityController extends AppController {
     }
 
     public function logout() {
-        session_start();
+        $this->ensureSession();
         session_unset();
         session_destroy();
         
@@ -114,7 +114,7 @@ class SecurityController extends AppController {
     }
 
     public function editProfile() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_id'])) {
             header("Location: /login");
             return;
@@ -167,5 +167,42 @@ class SecurityController extends AppController {
              // Błąd - zostań w formularzu
              return $this->render('edit_profile', ['user' => $user, 'messages' => $messages]);
         }
+    }
+
+    // W pliku: src/controllers/SecurityController.php
+
+    public function seedAdmin() {
+        // 1. Dane admina
+        $email = 'admin@universe.com';
+        $plainPassword = 'admin';
+
+        // 2. Sprawdź czy admin już istnieje
+        if ($this->userRepository->getUser($email)) {
+            echo "❌ Admin ($email) już istnieje w bazie danych! Możesz się logować.";
+            return;
+        }
+
+        // 3. Generowanie hasha
+        $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
+
+        // 4. Tworzymy obiekt User
+        // Kolejność argumentów: email, password, name, surname, studentId, uniId, facId, role
+        $admin = new User(
+            $email,
+            $hashedPassword,
+            'App',
+            'Admin',
+            null,
+            null,
+            null,
+            'app_admin' // Ważne: rola app_admin
+        );
+
+        // 5. Zapisujemy
+        $this->userRepository->addUser($admin);
+
+        echo "✅ <b>Sukces!</b> Konto administratora zostało utworzone.<br>";
+        echo "Login: $email<br>";
+        echo "Hasło: $plainPassword";
     }
 }

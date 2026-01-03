@@ -91,6 +91,10 @@ class Routing {
         "event-participants" => [
             "controller" => "AdminController",
             "action" => "eventParticipants"
+        ],
+        "seed-admin" => [
+            "controller" => "SecurityController",
+            "action" => "seedAdmin"
         ]
     ];
 

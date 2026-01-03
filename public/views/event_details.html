@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><?= $event->getTitle(); ?> - UniVerse</title>
-    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="/public/styles/dashboard.css">
-    <link rel="stylesheet" type="text/css" href="/public/styles/event_details.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
+<?php 
+    // Dynamiczny tytuł w karcie przeglądarki (np. "PK Quiz - UniVerse")
+    $evtTitle = isset($event) ? $event->getTitle() : 'Event Details';
+    $pageTitle = $evtTitle . ' - UniVerse';
+    include 'public/views/shared/header.php';
+?>
+<link rel="stylesheet" type="text/css" href="/public/styles/dashboard.css">
+<link rel="stylesheet" type="text/css" href="/public/styles/event_details.css">
+
 <body>
 
     <nav class="navbar">

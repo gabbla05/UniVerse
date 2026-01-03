@@ -21,7 +21,7 @@ class EventController extends AppController {
     }
 
     public function dashboard() {
-    session_start();
+    $this->ensureSession();
     $universityId = $_SESSION['user_university_id'] ?? 0;
     $role = $_SESSION['user_role'] ?? 'guest';
 
@@ -38,7 +38,7 @@ class EventController extends AppController {
     }
 
     public function addEvent() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
              header("Location: /dashboard"); return;
         }
@@ -82,7 +82,7 @@ class EventController extends AppController {
     }
 
     public function editEvent() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
              header("Location: /dashboard"); return;
         }
@@ -127,7 +127,7 @@ class EventController extends AppController {
     }
 
     public function deleteEvent() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
              header("Location: /dashboard"); return;
         }
@@ -150,7 +150,7 @@ class EventController extends AppController {
 
     // --- ZMODYFIKOWANA METODA SEARCH ---
     public function search() {
-        session_start();
+        $this->ensureSession();
         $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
 
         if (strpos($contentType, 'application/json') !== false) {
@@ -196,7 +196,7 @@ class EventController extends AppController {
     }
     
     public function join() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'user') {
              header("Location: /dashboard"); return;
         }
@@ -231,7 +231,7 @@ class EventController extends AppController {
     }
 
     public function leave() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'user') {
              header("Location: /dashboard"); return;
         }
@@ -254,7 +254,7 @@ class EventController extends AppController {
     }
 
     public function event() {
-        session_start();
+        $this->ensureSession();
         
         // Debug: Sprawdź czy ID w ogóle dociera
         if (!isset($_GET['id'])) { 
@@ -279,7 +279,7 @@ class EventController extends AppController {
     }
 
     public function profile() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_id'])) { header("Location: /login"); return; }
 
         $userId = $_SESSION['user_id'];

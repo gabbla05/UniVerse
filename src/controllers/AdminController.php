@@ -20,7 +20,7 @@ class AdminController extends AppController {
     }
 
     public function admin() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
              $url = "http://$_SERVER[HTTP_HOST]";
              header("Location: {$url}/login");
@@ -32,7 +32,7 @@ class AdminController extends AppController {
     }
 
     public function addUniversity() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
              $url = "http://$_SERVER[HTTP_HOST]";
              header("Location: {$url}/login");
@@ -81,7 +81,7 @@ class AdminController extends AppController {
     }
 
     public function deleteUniversity() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
              $url = "http://$_SERVER[HTTP_HOST]";
              header("Location: {$url}/login");
@@ -98,7 +98,7 @@ class AdminController extends AppController {
     }
 
     public function searchUniversities() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
              http_response_code(403);
              return;
@@ -131,7 +131,7 @@ class AdminController extends AppController {
     }
 
     public function editUniversity() {
-        session_start();
+        $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
              $url = "http://$_SERVER[HTTP_HOST]";
              header("Location: {$url}/login");
@@ -173,7 +173,7 @@ class AdminController extends AppController {
 
     // --- 3. BRAKOWAŁO CAŁEJ TEJ METODY! ---
     public function eventParticipants() {
-        session_start();
+        $this->ensureSession();
         // Zabezpieczenie: tylko admin uczelni może to widzieć
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
             header("Location: /dashboard");
