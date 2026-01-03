@@ -5,8 +5,27 @@ require_once __DIR__.'/../models/User.php';
 
 class UserRepository extends Repository {
 
+    // --- 1. Statyczna instancja ---
+    private static $instance = null;
+
+    // --- 2. Prywatny konstruktor (blokujemy 'new') ---
+    // Ale uwaga: Repository dziedziczy po klasie Repository, która może mieć swój konstruktor.
+    // W PHP przy Singletonie zazwyczaj zostawiamy konstruktor publiczny, jeśli dziedziczymy,
+    // albo musimy dostosować klasę bazową.
+    // Dla uproszczenia w Twoim projekcie: zostawiamy konstruktor z Repository,
+    // ale dodajemy metodę getInstance.
+
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new UserRepository();
+        }
+        return self::$instance;
+    }
+
+    // ... Reszta metod (getUser, addUser, itd.) BEZ ZMIAN ...
     public function getUser(string $email): ?User 
     {
+        // ... (Twój kod getUser) ...
         $stmt = $this->database->connect()->prepare('
             SELECT * FROM public.users WHERE email = :email
         ');
@@ -27,14 +46,13 @@ class UserRepository extends Repository {
             $user['student_id'],
             $user['university_id'],
             $user['faculty_id'],
-            $user['role'], // Przekazujemy rolę
-            $user['id']    // ZMIANA: Przekazujemy ID z bazy!
+            $user['role'], 
+            $user['id']
         );
     }
 
     public function addUser(User $user)
     {
-        // ZMIANA: Dodajemy kolumnę 'role' do INSERTa
         $stmt = $this->database->connect()->prepare('
             INSERT INTO users (name, surname, email, password, student_id, university_id, faculty_id, role)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -48,11 +66,10 @@ class UserRepository extends Repository {
             $user->getStudentId(),
             $user->getUniversityId(),
             $user->getFacultyId(),
-            $user->getRole() // Przekazujemy rolę (np. 'uni_admin')
+            $user->getRole()
         ]);
     }
 
-    // Metoda do zmiany danych (Imię, Nazwisko)
     public function updateUserInfo(int $userId, string $name, string $surname) {
         $stmt = $this->database->connect()->prepare('
             UPDATE users SET name = :name, surname = :surname WHERE id = :id
@@ -63,7 +80,6 @@ class UserRepository extends Repository {
         $stmt->execute();
     }
 
-    // Metoda do zmiany hasła
     public function changePassword(int $userId, string $newHashedPassword) {
         $stmt = $this->database->connect()->prepare('
             UPDATE users SET password = :password WHERE id = :id
@@ -73,7 +89,6 @@ class UserRepository extends Repository {
         $stmt->execute();
     }
     
-    // Metoda do pobrania usera po ID (żeby sprawdzić stare hasło)
     public function getUserById(int $id): ?User {
         $stmt = $this->database->connect()->prepare('SELECT * FROM users WHERE id = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);

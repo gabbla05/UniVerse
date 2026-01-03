@@ -1,24 +1,28 @@
 <?php
 
+// IMPORTY DLA ADNOTACJI I KLAS
+require_once 'src/attributes/AllowedMethods.php'; // <--- WAŻNE: To ładuje klasę adnotacji
 require_once __DIR__ . '/AppController.php';
 require_once __DIR__ . '/../models/University.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../repository/UniversityRepository.php';
 require_once __DIR__ . '/../repository/UserRepository.php';
-require_once __DIR__ . '/../repository/EventRepository.php'; // To musi być!
+require_once __DIR__ . '/../repository/EventRepository.php';
 
 class AdminController extends AppController {
 
     private $universityRepository;
     private $userRepository;
-    private $eventRepository; // <--- 1. BRAKOWAŁO TEGO POLA
+    private $eventRepository;
 
     public function __construct() {
         $this->universityRepository = new UniversityRepository();
-        $this->userRepository = new UserRepository();
-        $this->eventRepository = new EventRepository(); // <--- 2. BRAKOWAŁO INICJALIZACJI
+        $this->userRepository = UserRepository::getInstance();
+        $this->eventRepository = new EventRepository();
     }
 
+    // Wyświetlanie panelu admina (Domyślnie GET)
+    #[AllowedMethods(['GET'])]
     public function admin() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
@@ -31,6 +35,8 @@ class AdminController extends AppController {
         return $this->render('admin', ['universities' => $universities]);
     }
 
+    // Dodawanie uczelni (Formularz wysyłany POSTem)
+    #[AllowedMethods(['POST'])]
     public function addUniversity() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
@@ -39,17 +45,20 @@ class AdminController extends AppController {
              exit();
         }
 
-        if (!$this->isPost()) {
-             return $this->admin();
-        }
-
-        $uniName = $_POST['name'];
-        $uniCity = $_POST['city'];
+        $uniName = trim($_POST['name']);
+        $uniCity = trim($_POST['city']);
         $facultiesString = $_POST['faculties']; 
-        $adminName = $_POST['admin_name'];
-        $adminSurname = $_POST['admin_surname'];
-        $adminEmail = $_POST['admin_email'];
+        $adminName = trim($_POST['admin_name']);
+        $adminSurname = trim($_POST['admin_surname']);
+        $adminEmail = trim($_POST['admin_email']);
         $adminPassword = $_POST['admin_password'];
+
+        // --- ZABEZPIECZENIE C1: Walidacja emaila admina uczelni ---
+        if (!filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+            // W panelu admina możemy rzucić wyjątek lub die(), bo to błąd operatora
+            die("Błąd: Nieprawidłowy format adresu email administratora uczelni!");
+        }
+        // ----------------------------------------------------------
 
         $newUniId = $this->universityRepository->addUniversity($uniName, $uniCity);
 
@@ -80,6 +89,8 @@ class AdminController extends AppController {
         header("Location: {$url}/admin");
     }
 
+    // Usuwanie uczelni (Link GET)
+    #[AllowedMethods(['GET'])]
     public function deleteUniversity() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
@@ -97,6 +108,8 @@ class AdminController extends AppController {
         header("Location: {$url}/admin");
     }
 
+    // Wyszukiwanie AJAX (POST)
+    #[AllowedMethods(['POST'])]
     public function searchUniversities() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
@@ -130,6 +143,8 @@ class AdminController extends AppController {
         }
     }
 
+    // Edycja uczelni (GET - formularz, POST - zapis)
+    // Tu nie dajemy adnotacji, bo jedna funkcja obsługuje obie metody (Twoja logika w środku)
     public function editUniversity() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
@@ -155,12 +170,20 @@ class AdminController extends AppController {
         }
 
         if ($this->isPost()) {
+            $adminEmail = $_POST['admin_email'];
+
+            // --- ZABEZPIECZENIE C1 (BINGO) ---
+            if (!filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+                die("Błąd: Nieprawidłowy format adresu email!");
+            }
+            // ---------------------------------
+
             $updateData = [
                 'uni_name' => $_POST['name'],
                 'uni_city' => $_POST['city'],
                 'admin_name' => $_POST['admin_name'],
                 'admin_surname' => $_POST['admin_surname'],
-                'admin_email' => $_POST['admin_email'],
+                'admin_email' => $adminEmail, // Używamy zmiennej
                 'faculties' => $_POST['faculties'] 
             ];
             
@@ -171,10 +194,9 @@ class AdminController extends AppController {
         }
     }
 
-    // --- 3. BRAKOWAŁO CAŁEJ TEJ METODY! ---
+    #[AllowedMethods(['GET'])]
     public function eventParticipants() {
         $this->ensureSession();
-        // Zabezpieczenie: tylko admin uczelni może to widzieć
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'uni_admin') {
             header("Location: /dashboard");
             return;
@@ -187,9 +209,7 @@ class AdminController extends AppController {
 
         $eventId = $_GET['id'];
         
-        // Pobieramy uczestników z repozytorium
         $participants = $this->eventRepository->getEventParticipants($eventId);
-        // Pobieramy info o wydarzeniu (żeby wyświetlić tytuł)
         $event = $this->eventRepository->getEvent($eventId);
 
         $this->render('participants', [

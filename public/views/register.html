@@ -22,6 +22,7 @@
                 <p class="subtitle">Create an account to see and manage your events.</p>
                 
                 <form action="register" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
                     <div class="messages">
                         <?php if(isset($messages)){ foreach($messages as $message) { echo htmlspecialchars($message); } } ?>
                     </div>
@@ -149,6 +150,9 @@
             facultySelect.innerHTML = '<option value="" disabled selected>Error loading faculties</option>';
         });
     }
-</script>
+    </script>
+
+    <script src="/public/scripts/validation.js"></script>
+
 </body>
 </html>

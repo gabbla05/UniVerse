@@ -23,6 +23,7 @@
                 <p class="subtitle">Log in to manage your events.</p>
                 
                 <form action="login" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
                     <div class="messages">
                         <?php if(isset($messages)){ foreach($messages as $message) { echo htmlspecialchars($message); } } ?>
                     </div>

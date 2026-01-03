@@ -16,29 +16,43 @@ class SecurityController extends AppController {
         $this->universityRepository = new UniversityRepository();
     }
 
-    public function login() 
-    {
+    #[AllowedMethods(['GET', 'POST'])]
+    public function login() {
+        $this->ensureSession();
+
+        if (isset($_SESSION['user_id'])) {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/dashboard");
+            exit();
+        }
+
         if (!$this->isPost()) {
             return $this->render('login');
         }
 
-        $email = $_POST['email'];
+        // 1. Walidacja CSRF
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+             return $this->render('login', ['messages' => ['Session expired. Please try again.']]);
+        }
+
+        $email = trim($_POST['email']);
         $password = $_POST['password'];
+
+        // --- ZABEZPIECZENIE C1: Szybka walidacja formatu ---
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            // Zwracamy ten sam błąd co przy złym haśle (Bingo B1 - nie zdradzamy szczegółów)
+            return $this->render('login', ['messages' => ['Incorrect email or password!']]);
+        }
+        // ---------------------------------------------------
 
         $user = $this->userRepository->getUser($email);
 
-        if (!$user) {
-            return $this->render('login', ['messages' => ['User not found!']]);
+        if (!$user || !password_verify($password, $user->getPassword())) {
+            return $this->render('login', ['messages' => ['Incorrect email or password!']]);
         }
 
-        // ZMIANA: Używamy password_verify do sprawdzenia hash'a
-        if (!password_verify($password, $user->getPassword())) {
-            return $this->render('login', ['messages' => ['Wrong password!']]);
-        }
+        session_regenerate_id(true);
         
-        $this->ensureSession();
-        
-        // ZMIANA: Zapisujemy ID do sesji
         $_SESSION['user_id'] = $user->getId(); 
         $_SESSION['user_email'] = $user->getEmail();
         $_SESSION['user_role'] = $user->getRole();
@@ -56,35 +70,81 @@ class SecurityController extends AppController {
         }
     }
 
-    public function register() 
-    {
+    #[AllowedMethods(['GET', 'POST'])]
+    public function register() {
+        $this->ensureSession();
+
         if (!$this->isPost()) {
             $universities = $this->universityRepository->getUniversities();
             return $this->render('register', ['universities' => $universities]);
         }
 
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $confirmedPassword = $_POST['password_confirm'];
-        $name = $_POST['name'];
-        $surname = $_POST['surname'];
-        $studentId = $_POST['student_id']; 
-        $universityId = (int)$_POST['university'];
-        $facultyId = (int)$_POST['faculty'];
-
-        if ($password !== $confirmedPassword) {
-            return $this->render('register', ['messages' => ['Please provide proper password']]);
+        // 1. Ochrona CSRF (Jeśli wdrożyłeś)
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+             // Możesz też po prostu przeładować stronę
+             $universities = $this->universityRepository->getUniversities();
+             return $this->render('register', ['messages' => ['Session expired (CSRF). Try again.'], 'universities' => $universities]);
         }
 
-        // ZMIANA: Hashujemy hasło przed zapisaniem!
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $email = trim($_POST['email']); // Trim usuwa spacje
+        $password = $_POST['password'];
+        $confirmedPassword = $_POST['password_confirm'];
+        $name = trim($_POST['name']);
+        $surname = trim($_POST['surname']);
+        $studentId = trim($_POST['student_id']);
+        $universityId = $_POST['university'];
+        $facultyId = $_POST['faculty'];
 
-        // Przekazujemy zahaszowane hasło do obiektu User
-        $user = new User($email, $hashedPassword, $name, $surname, $studentId, $universityId, $facultyId);
+        // --- WALIDACJA PO STRONIE SERWERA (C1 w Bingo) ---
+
+        // 2. Walidacja Emaila (musi mieć @ i kropkę)
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $universities = $this->universityRepository->getUniversities();
+            return $this->render('register', ['messages' => ['Invalid email format!'], 'universities' => $universities]);
+        }
+
+        // 3. Walidacja Pustych Pól (Imię, Nazwisko)
+        if (empty($name) || empty($surname) || empty($universityId) || empty($facultyId)) {
+            $universities = $this->universityRepository->getUniversities();
+            return $this->render('register', ['messages' => ['All fields are required!'], 'universities' => $universities]);
+        }
+
+        // 4. Walidacja Hasła (min 6 znaków)
+        if (strlen($password) < 6) {
+            $universities = $this->universityRepository->getUniversities();
+            return $this->render('register', ['messages' => ['Password must be at least 6 chars long!'], 'universities' => $universities]);
+        }
+
+        // 5. Walidacja Zgodności Haseł
+        if ($password !== $confirmedPassword) {
+            $universities = $this->universityRepository->getUniversities();
+            return $this->render('register', ['messages' => ['Passwords do not match!'], 'universities' => $universities]);
+        }
+
+        // 6. Sprawdzenie unikalności emaila
+        if ($this->userRepository->getUser($email)) {
+            $universities = $this->universityRepository->getUniversities();
+            return $this->render('register', ['messages' => ['User with this email already exists!'], 'universities' => $universities]);
+        }
+
+        // ------------------------------------------------
+
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+        $user = new User(
+            $email, 
+            $hashedPassword, 
+            $name, 
+            $surname, 
+            $studentId, 
+            $universityId, 
+            $facultyId,
+            'user'
+        );
 
         $this->userRepository->addUser($user);
 
-        return $this->render('login', ['messages' => ['You have been successfully registered!']]);
+        return $this->render('login', ['messages' => ['You\'ve been successfully registered!']]);
     }
 
     public function logout() {
