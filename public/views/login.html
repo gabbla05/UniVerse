@@ -24,7 +24,7 @@
                 
                 <form action="login" method="POST">
                     <div class="messages">
-                        <?php if(isset($messages)){ foreach($messages as $message) { echo $message; } } ?>
+                        <?php if(isset($messages)){ foreach($messages as $message) { echo htmlspecialchars($message); } } ?>
                     </div>
 
                     <label for="email">University e-mail</label>

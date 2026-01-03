@@ -23,7 +23,7 @@
                 
                 <form action="register" method="POST">
                     <div class="messages">
-                        <?php if(isset($messages)){ foreach($messages as $message) { echo $message; } } ?>
+                        <?php if(isset($messages)){ foreach($messages as $message) { echo htmlspecialchars($message); } } ?>
                     </div>
 
                     <label>Name</label>
@@ -51,8 +51,8 @@
                             <option value="" disabled selected>Choose your university</option>
                                 <?php if(isset($universities)): ?>
                                 <?php foreach($universities as $uni): ?>
-                            <option value="<?= $uni->getId(); ?>"><?= $uni->getName(); ?></option>
-                            <?php endforeach; ?>
+                                    <option value="<?= htmlspecialchars($uni->getId()); ?>"><?= htmlspecialchars($uni->getName()); ?></option>
+                                <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
 
@@ -138,8 +138,9 @@
             } else {
                 // Generujemy opcje z pobranych danych
                 data.forEach(faculty => {
-                    // Zakładam, że backend zwraca obiekty z polami 'id' i 'name'
-                    facultySelect.innerHTML += `<option value="${faculty.id}">${faculty.name}</option>`;
+                    // ZABEZPIECZENIE 3: Sanityzacja nazwy wydziału po stronie JS
+                    const safeName = faculty.name.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+                    facultySelect.innerHTML += `<option value="${faculty.id}">${safeName}</option>`;
                 });
             }
         })

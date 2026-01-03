@@ -21,25 +21,25 @@
                 <h2>Edit University Profile</h2>
                 <p class="subtitle">Update university details, faculties and admin info.</p>
 
-                <form action="edit-university?id=<?= $data['university']['id']; ?>" method="POST">
+                <form action="edit-university?id=<?= htmlspecialchars($data['university']['id']); ?>" method="POST">
                     
                     <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">1. University Details</h3>
                     
                     <label>University Name</label>
                     <div class="input-group">
-                        <input name="name" type="text" value="<?= $data['university']['name']; ?>" required>
+                        <input name="name" type="text" value="<?= htmlspecialchars($data['university']['name']); ?>" required>
                     </div>
 
                     <label>City</label>
                     <div class="input-group">
-                        <input name="city" type="text" value="<?= $data['university']['city']; ?>" required>
+                        <input name="city" type="text" value="<?= htmlspecialchars($data['university']['city']); ?>" required>
                     </div>
 
                     <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">2. Faculties</h3>
                     <p style="font-size: 0.8rem; color: var(--text-gray); margin-bottom: 5px;">Edit list separated by commas. Removing a faculty will delete its events!</p>
                     
                     <div class="input-group">
-                        <textarea name="faculties" rows="4" required><?= $data['faculties']; ?></textarea>
+                        <textarea name="faculties" rows="4" required><?= htmlspecialchars($data['faculties']); ?></textarea>
                     </div>
 
                     <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">3. University Admin</h3>
@@ -47,17 +47,17 @@
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 1;">
                             <label>First Name</label>
-                            <input name="admin_name" type="text" value="<?= $data['admin']['name'] ?? ''; ?>" required>
+                            <input name="admin_name" type="text" value="<?= htmlspecialchars($data['admin']['name'] ?? ''); ?>" required>
                         </div>
                         <div style="flex: 1;">
                             <label>Surname</label>
-                            <input name="admin_surname" type="text" value="<?= $data['admin']['surname'] ?? ''; ?>" required>
+                            <input name="admin_surname" type="text" value="<?= htmlspecialchars($data['admin']['surname'] ?? ''); ?>" required>
                         </div>
                     </div>
 
                     <label>Admin E-mail</label>
                     <div class="input-group">
-                        <input name="admin_email" type="email" value="<?= $data['admin']['email'] ?? ''; ?>" required>
+                        <input name="admin_email" type="email" value="<?= htmlspecialchars($data['admin']['email'] ?? ''); ?>" required>
                     </div>
 
                     <button type="submit" class="btn-add">Save All Changes</button>

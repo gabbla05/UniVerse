@@ -25,7 +25,7 @@
 
                 <form action="add-event" method="POST" enctype="multipart/form-data">
                     
-                    <?php if(isset($messages)){ foreach($messages as $message) { echo "<p style='color: #ef4444; margin-bottom: 1rem;'>$message</p>"; } } ?>
+                    <?php if(isset($messages)){ foreach($messages as $message) { echo "<p style='color: #ef4444; margin-bottom: 1rem;'>" . htmlspecialchars($message) . "</p>"; } } ?>
 
                     <label>Event Title</label>
                     <div class="input-group">
@@ -62,7 +62,7 @@
                             <option value="">All Faculties (University-wide)</option>
                             <?php if(isset($faculties)): ?>
                                 <?php foreach($faculties as $faculty): ?>
-                                    <option value="<?= $faculty['id']; ?>"><?= $faculty['name']; ?></option>
+                                    <option value="<?= htmlspecialchars($faculty['id']); ?>"><?= htmlspecialchars($faculty['name']); ?></option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>

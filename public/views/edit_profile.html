@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Profile - UniVerse</title>
-    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
+<?php 
+    $pageTitle = 'Edit Profile - UniVerse';
+    include 'public/views/shared/header.php';
+?>
+<link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
+
 <body>
 
     <nav class="navbar">
         <div class="logo-container">
-            <img src="/public/img/logo.png" class="logo-img">
+            <img src="/public/img/logo.png" class="logo-img" alt="UniVerse Logo">
             <span class="logo-text">UniVerse</span>
         </div>
         <a href="/profile" style="color: var(--text-gray); margin-right: 20px;">Cancel</a>
@@ -22,7 +22,7 @@
                 <h2>Edit Profile</h2>
                 <p class="subtitle">Update your personal information.</p>
 
-                <?php if(isset($messages)){ foreach($messages as $message) { echo "<p style='color: #ef4444; margin-bottom: 1rem;'>$message</p>"; } } ?>
+                <?php if(isset($messages)){ foreach($messages as $message) { echo "<p style='color: #ef4444; margin-bottom: 1rem;'>" . htmlspecialchars($message) . "</p>"; } } ?>
 
                 <form action="edit-profile" method="POST">
                     
@@ -30,12 +30,12 @@
                     
                     <label>Name</label>
                     <div class="input-group">
-                        <input name="name" type="text" value="<?= $user->getName(); ?>" required>
+                        <input name="name" type="text" value="<?= htmlspecialchars($user->getName()); ?>" required>
                     </div>
 
                     <label>Surname</label>
                     <div class="input-group">
-                        <input name="surname" type="text" value="<?= $user->getSurname(); ?>" required>
+                        <input name="surname" type="text" value="<?= htmlspecialchars($user->getSurname()); ?>" required>
                     </div>
 
                     <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 2rem; margin-bottom: 10px; text-transform: uppercase;">Change Password</h3>

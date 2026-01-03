@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="public/styles/main.css">
-    <title>404</title>
-</head>
-<body>
-    <h1>404</h1>
+<?php 
+    $pageTitle = 'Page Not Found';
+    include 'public/views/shared/header.php';
+?>
+<body style="background-color: var(--bg-dark); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center;">
+    
+    <h1 style="font-size: 8rem; margin: 0; color: var(--accent-neon); text-shadow: 0 0 30px rgba(61, 223, 255, 0.4);">404</h1>
+    <p style="font-size: 1.5rem; color: var(--text-gray); margin-bottom: 2rem;">Oops! Looks like you got lost in the UniVerse.</p>
+    
+    <a href="/dashboard" style="padding: 1rem 2rem; background-color: var(--accent-neon); color: var(--bg-dark); font-weight: 700; border-radius: 12px; text-decoration: none; transition: transform 0.2s;">
+        Back to Safety
+    </a>
+
 </body>
 </html>

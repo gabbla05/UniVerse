@@ -2,7 +2,8 @@
 <html lang="en">
 <?php 
     // Pobieramy tytuł wydarzenia, żeby wyświetlić go w karcie przeglądarki
-    $evtTitle = isset($event) ? $event->getTitle() : 'Event';
+    // ZABEZPIECZENIE: Tytuł w pasku przeglądarki
+    $evtTitle = isset($event) ? htmlspecialchars($event->getTitle()) : 'Event';
     $pageTitle = 'Edit ' . $evtTitle . ' - UniVerse';
     include 'public/views/shared/header.php';
 ?>
@@ -20,18 +21,19 @@
         <div class="form-section" style="max-width: 600px; flex: 1;">
             <div class="form-card">
                 <h2>Edit Event</h2>
-                <p class="subtitle">Update details for "<?= $event->getTitle(); ?>"</p>
+                <p class="subtitle">Update details for "<?= htmlspecialchars($event->getTitle()); ?>"</p>
 
-                <form action="edit-event?id=<?= $event->getId(); ?>" method="POST" enctype="multipart/form-data">
+                <form action="edit-event?id=<?= htmlspecialchars($event->getId()); ?>" method="POST" enctype="multipart/form-data">
                     
                     <label>Event Title</label>
                     <div class="input-group">
                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        <input name="title" type="text" value="<?= $event->getTitle(); ?>" required>
+                        <input name="title" type="text" value="<?= htmlspecialchars($event->getTitle()); ?>" required>
                     </div>
 
                     <label>Description</label>
-                    <div class="input-group"> <textarea name="description" rows="5" style="width: 100%; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem; padding: 1rem;"><?= $event->getDescription(); ?></textarea>
+                    <div class="input-group"> 
+                        <textarea name="description" rows="5" style="width: 100%; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem; padding: 1rem;"><?= htmlspecialchars($event->getDescription()); ?></textarea>
                     </div>
 
                     <div style="display: flex; gap: 20px;">
@@ -39,7 +41,7 @@
                             <label>Date & Time</label>
                             <div class="input-group">
                                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                <input name="date" type="datetime-local" value="<?= date('Y-m-d\TH:i', strtotime($event->getDate())); ?>" required>
+                                <input name="date" type="datetime-local" value="<?= htmlspecialchars(date('Y-m-d\TH:i', strtotime($event->getDate()))); ?>" required>
                             </div>
                         </div>
                         
@@ -47,7 +49,7 @@
                             <label>Location</label>
                             <div class="input-group">
                                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                <input name="location" type="text" value="<?= $event->getLocation(); ?>" required>
+                                <input name="location" type="text" value="<?= htmlspecialchars($event->getLocation()); ?>" required>
                             </div>
                         </div>
                     </div>
@@ -59,8 +61,8 @@
                             <option value="">All Faculties (University-wide)</option>
                             <?php if(isset($faculties)): ?>
                                 <?php foreach($faculties as $faculty): ?>
-                                    <option value="<?= $faculty['id']; ?>" <?= $event->getFacultyId() == $faculty['id'] ? 'selected' : ''; ?>>
-                                        <?= $faculty['name']; ?>
+                                    <option value="<?= htmlspecialchars($faculty['id']); ?>" <?= $event->getFacultyId() == $faculty['id'] ? 'selected' : ''; ?>>
+                                        <?= htmlspecialchars($faculty['name']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -81,7 +83,7 @@
                     <label style="margin-top: 1.5rem;">Update Image (Optional)</label>
                     <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 2rem;">
                         <?php if($event->getImage()): ?>
-                            <img src="/public/uploads/<?= $event->getImage(); ?>" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--input-border);">
+                            <img src="/public/uploads/<?= htmlspecialchars($event->getImage()); ?>" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--input-border);">
                         <?php endif; ?>
                         
                         <div class="input-group" style="flex: 1; margin-bottom: 0;">

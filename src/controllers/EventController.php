@@ -256,9 +256,11 @@ class EventController extends AppController {
     public function event() {
         $this->ensureSession();
         
-        // Debug: Sprawdź czy ID w ogóle dociera
+        // 1. Sprawdzamy czy ID istnieje w URL
         if (!isset($_GET['id'])) { 
-            die("BŁĄD: Brak ID w pasku adresu! URL powinien wyglądać np. /event?id=1"); 
+            http_response_code(404);
+            $this->render('404'); // Ładujemy widok błędu
+            return;
         }
         
         $eventId = $_GET['id'];
@@ -266,12 +268,11 @@ class EventController extends AppController {
 
         $event = $this->eventRepository->getEvent($eventId);
         
+        // 2. Sprawdzamy czy wydarzenie istnieje w bazie
         if (!$event) {
-            // ZAMIAST PRZEKIEROWANIA - WYŚWIETL KOMUNIKAT
-            die("BŁĄD: Nie znaleziono w bazie wydarzenia o ID: " . htmlspecialchars($eventId));
-            
-            // header("Location: /dashboard"); // <--- To była przyczyna "powrotu"
-            // return;
+            http_response_code(404);
+            $this->render('404'); // Ładujemy widok błędu
+            return;
         }
 
         $isJoined = $this->eventRepository->isJoined($userId, $eventId);
