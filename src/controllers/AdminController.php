@@ -26,8 +26,7 @@ class AdminController extends AppController {
     public function admin() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
-             $url = "http://$_SERVER[HTTP_HOST]";
-             header("Location: {$url}/login");
+             header("Location: /login");
              exit();
         }
 
@@ -40,8 +39,7 @@ class AdminController extends AppController {
     public function addUniversity() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
-             $url = "http://$_SERVER[HTTP_HOST]";
-             header("Location: {$url}/login");
+             header("Location: /login");
              exit();
         }
 
@@ -85,8 +83,7 @@ class AdminController extends AppController {
 
         $this->userRepository->addUser($uniAdmin);
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/admin");
+        header("Location: /admin");
     }
 
     // Usuwanie uczelni (Link GET)
@@ -94,8 +91,7 @@ class AdminController extends AppController {
     public function deleteUniversity() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
-             $url = "http://$_SERVER[HTTP_HOST]";
-             header("Location: {$url}/login");
+             header("Location: /login");
              exit();
         }
 
@@ -104,8 +100,7 @@ class AdminController extends AppController {
             $this->universityRepository->deleteUniversity($id);
         }
         
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/admin");
+        header("Location: /admin");
     }
 
     // Wyszukiwanie AJAX (POST)
@@ -148,15 +143,13 @@ class AdminController extends AppController {
     public function editUniversity() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
-             $url = "http://$_SERVER[HTTP_HOST]";
-             header("Location: {$url}/login");
+             header("Location: /login");
              exit();
         }
 
         $id = $_GET['id'];
         if (!$id) { 
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/admin"); 
+            header("Location: /admin"); 
             exit();
         }
 
@@ -189,8 +182,7 @@ class AdminController extends AppController {
             
             $this->universityRepository->updateUniversityData($id, $updateData);
             
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/admin");
+            header("Location: /admin");
         }
     }
 

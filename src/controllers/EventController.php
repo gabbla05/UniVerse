@@ -144,8 +144,7 @@ class EventController extends AppController {
             $this->eventRepository->deleteEvent($id);
         }
         
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/dashboard");
+        header("Location: /dashboard");
     }
 
     // --- ZMODYFIKOWANA METODA SEARCH ---
