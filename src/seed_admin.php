@@ -39,9 +39,11 @@ try {
 
     echo "<b>Sukces!</b> Konto administratora zostało utworzone.<br>";
     echo "Email: $email<br>";
-    echo "Hasło: $plainPassword<br>";
+    echo "⚠️ Hasło było ustawione na wdrożenie. Zmień je logując się do panelu admin!<br>";
     echo "Hash w bazie: $hashedPassword";
 
 } catch (Exception $e) {
-    echo "Wystąpił błąd: " . $e->getMessage();
+    // --- WYMÓG: Nie pokazuję surowych błędów w produkcji ---
+    error_log("Admin seed error: " . $e->getMessage());
+    echo "Wystąpił błąd: Skontaktuj się z administratorem";
 }

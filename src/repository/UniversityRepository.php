@@ -83,9 +83,10 @@ class UniversityRepository extends Repository {
             return [];
         }
 
-        // 2. Pobierz dane admina tej uczelni
+        // 2. Pobierz dane admina tej uczelni - --- WYMÓG: Tylko niezbędne kolumny ---
         $stmt = $this->database->connect()->prepare("
-            SELECT * FROM users WHERE university_id = :id AND role = 'uni_admin' LIMIT 1
+            SELECT id, name, surname, email FROM users 
+            WHERE university_id = :id AND role = 'uni_admin' LIMIT 1
         ");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();

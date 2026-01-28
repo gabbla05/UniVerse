@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<?php 
+    $pageTitle = 'Unauthorized';
+    include 'public/views/shared/header.php';
+?>
+<link rel="stylesheet" type="text/css" href="/public/styles/errors.css">
+
+<body>
+    <div class="error-container">
+        <div class="error-content">
+            <h1 class="error-code">401</h1>
+            <h2 class="error-title">Unauthorized</h2>
+            <p class="error-message">You need to log in to access this page. Please sign in with your account to continue.</p>
+            <div class="error-actions">
+                <a href="/login" class="error-btn">Go to Login</a>
+                <a href="/register" class="error-btn-secondary">Create Account</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

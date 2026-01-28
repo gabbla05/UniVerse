@@ -25,9 +25,11 @@ class UserRepository extends Repository {
     // ... Reszta metod (getUser, addUser, itd.) BEZ ZMIAN ...
     public function getUser(string $email): ?User 
     {
-        // ... (Twój kod getUser) ...
+        // --- WYMÓG: Pobieramy tylko niezbędne kolumny do logowania ---
         $stmt = $this->database->connect()->prepare('
-            SELECT * FROM public.users WHERE email = :email
+            SELECT id, email, password, name, surname, student_id, university_id, faculty_id, role 
+            FROM public.users 
+            WHERE email = :email
         ');
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->execute();
@@ -90,17 +92,29 @@ class UserRepository extends Repository {
     }
     
     public function getUserById(int $id): ?User {
-        $stmt = $this->database->connect()->prepare('SELECT * FROM users WHERE id = :id');
+        // --- WYMÓG: Pobieramy tylko niezbędne kolumny ---
+        $stmt = $this->database->connect()->prepare('
+            SELECT id, email, name, surname, student_id, university_id, faculty_id, role 
+            FROM users 
+            WHERE id = :id
+        ');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) return null;
 
+        // Dla editProfile nie potrzebujemy hasła, dlatego przekazujemy pusty string
         return new User(
-            $user['email'], $user['password'], $user['name'], $user['surname'],
-            $user['student_id'], $user['university_id'], $user['faculty_id'],
-            $user['role'], $user['id']
+            $user['email'], 
+            '', // BRAK HASŁA - nie potrzebujemy do wyświetlania
+            $user['name'], 
+            $user['surname'],
+            $user['student_id'], 
+            $user['university_id'], 
+            $user['faculty_id'],
+            $user['role'], 
+            $user['id']
         );
     }
 }

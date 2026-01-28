@@ -112,13 +112,13 @@
                     <label>University Name</label>
                     <div class="input-group">
                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                        <input name="name" type="text" placeholder="e.g. MIT" required>
+                        <input name="name" type="text" placeholder="e.g. MIT" required maxlength="200">
                     </div>
 
                     <label>City</label>
                     <div class="input-group">
                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        <input name="city" type="text" placeholder="e.g. Boston" required>
+                        <input name="city" type="text" placeholder="e.g. Boston" required maxlength="100">
                     </div>
 
                     <h3 style="color: var(--accent-neon); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 10px; text-transform: uppercase;">2. Faculties</h3>
@@ -136,14 +136,14 @@
                             <label>Name</label>
                             <div class="input-group">
                                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                                <input name="admin_name" type="text" placeholder="John" required>
+                                <input name="admin_name" type="text" placeholder="John" required maxlength="100">
                             </div>
                         </div>
                         <div style="flex: 1;">
                             <label>Surname</label>
                             <div class="input-group">
                                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                                <input name="admin_surname" type="text" placeholder="Doe" required>
+                                <input name="admin_surname" type="text" placeholder="Doe" required maxlength="100">
                             </div>
                         </div>
                     </div>
@@ -151,13 +151,13 @@
                     <label>Admin E-mail</label>
                     <div class="input-group">
                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                        <input name="admin_email" type="email" placeholder="admin@uni.edu" required>
+                        <input name="admin_email" type="email" placeholder="admin@uni.edu" required maxlength="255">
                     </div>
 
                     <label>Admin Password</label>
                     <div class="input-group">
                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-4V7a4 4 0 00-8 0v4h8z" /></svg>
-                        <input name="admin_password" type="password" placeholder="Secret password" required>
+                        <input name="admin_password" type="password" placeholder="Secret password" required maxlength="255">
                     </div>
 
                     <button type="submit" class="btn-add">

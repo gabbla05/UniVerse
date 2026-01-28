@@ -30,7 +30,9 @@ class Database {
             return $conn;
         }
         catch(PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
+            // --- WYMÓG: Nie pokazuję surowych błędów użytkownikowi ---
+            error_log("Database connection error: " . $e->getMessage());
+            die("Connection failed. Please try again later.");
         }
     }
 }

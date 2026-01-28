@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<?php 
+    $pageTitle = 'Server Error';
+    include 'public/views/shared/header.php';
+?>
+<link rel="stylesheet" type="text/css" href="/public/styles/errors.css">
+
+<body>
+    <div class="error-container">
+        <div class="error-content">
+            <h1 class="error-code">500</h1>
+            <h2 class="error-title">Server Error</h2>
+            <p class="error-message">Oops! Something went wrong on our end. Our team has been notified and we're working to fix it. Please try again later.</p>
+            <div class="error-actions">
+                <a href="/" class="error-btn">Back to Home</a>
+                <a href="/dashboard" class="error-btn-secondary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

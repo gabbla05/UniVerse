@@ -103,7 +103,10 @@ class Routing {
         $actionUrl = explode("/", $url)[0];
 
         if (!array_key_exists($actionUrl, self::$routes)) {
-            die("Wrong url!");
+            // --- WYMÓG: Zwracam sensowny kod HTTP zamiast die() ---
+            http_response_code(404);
+            include 'public/views/404.html';
+            return;
         }
 
         // 1. Wyciągamy konfigurację dla danej ścieżki (to jest tablica!)

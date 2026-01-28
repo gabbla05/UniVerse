@@ -6,6 +6,12 @@ class AppController {
 
     protected function ensureSession() {
         if (session_status() === PHP_SESSION_NONE) {
+            // --- WYMÓG: Cookie sesyjne z flagą HttpOnly ---
+            session_set_cookie_params([
+                'httponly' => true,
+                'secure' => true,
+                'samesite' => 'Strict'
+            ]);
             session_start();
         }
         

@@ -76,12 +76,14 @@ class EventController extends AppController {
                 header("Location: /dashboard");
                 return;
             } catch (PDOException $e) {
+                // --- WYMÓG: Nie pokazuję surowych błędów użytkownikowi ---
+                error_log("Event creation error: " . $e->getMessage());
                 // Sprawdzamy czy komunikat błędu zawiera nasz tekst z bazy danych
                 if (strpos($e->getMessage(), 'Event date must be in the future') !== false) {
                     $this->messages[] = 'Event date must be in the future!';
                 } else {
-                    // Inny błąd bazy danych
-                    $this->messages[] = 'Database error: ' . $e->getMessage();
+                    // Inny błąd bazy danych - wyświetlam generyczną wiadomość
+                    $this->messages[] = 'An error occurred while creating the event. Please try again.';
                 }
                 // Nie robimy return, kod poleci dalej i wyświetli formularz z błędem
             }
@@ -141,10 +143,12 @@ class EventController extends AppController {
                 header("Location: /dashboard");
                 return;
             } catch (PDOException $e) {
+                // --- WYMÓG: Nie pokazuję surowych błędów użytkownikowi ---
+                error_log("Event update error: " . $e->getMessage());
                 if (strpos($e->getMessage(), 'Event date must be in the future') !== false) {
                     $this->messages[] = 'Event date must be in the future!';
                 } else {
-                    $this->messages[] = 'Database error: ' . $e->getMessage();
+                    $this->messages[] = 'An error occurred while updating the event. Please try again.';
                 }
 
                 // Musimy znowu pobrać wydziały, bo renderujemy widok od nowa

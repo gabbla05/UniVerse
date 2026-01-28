@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php 
-    $pageTitle = 'Page Not Found';
+    $pageTitle = 'Forbidden';
     include 'public/views/shared/header.php';
 ?>
 <link rel="stylesheet" type="text/css" href="/public/styles/errors.css">
@@ -9,9 +9,9 @@
 <body>
     <div class="error-container">
         <div class="error-content">
-            <h1 class="error-code">404</h1>
-            <h2 class="error-title">Page Not Found</h2>
-            <p class="error-message">Oops! Looks like you got lost in the UniVerse. The page you're looking for doesn't exist.</p>
+            <h1 class="error-code">403</h1>
+            <h2 class="error-title">Access Forbidden</h2>
+            <p class="error-message">You don't have permission to access this resource. If you believe this is a mistake, please contact the administrator.</p>
             <div class="error-actions">
                 <a href="/dashboard" class="error-btn">Go to Dashboard</a>
                 <a href="/" class="error-btn-secondary">Back to Home</a>
