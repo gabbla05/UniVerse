@@ -24,6 +24,12 @@
                 <p class="subtitle">Update details for "<?= htmlspecialchars($event->getTitle()); ?>"</p>
 
                 <form action="edit-event?id=<?= htmlspecialchars($event->getId()); ?>" method="POST" enctype="multipart/form-data">
+
+                    <?php if(isset($messages)){ 
+                        foreach($messages as $message) { 
+                            echo "<p style='color: #ef4444; margin-bottom: 1rem; font-weight: 600; text-align: center;'>" . htmlspecialchars($message) . "</p>"; 
+                        } 
+                    } ?>
                     
                     <label>Event Title</label>
                     <div class="input-group">
@@ -33,7 +39,8 @@
 
                     <label>Description</label>
                     <div class="input-group"> 
-                        <textarea name="description" rows="5" style="width: 100%; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem; padding: 1rem;"><?= htmlspecialchars($event->getDescription()); ?></textarea>
+                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 12px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                        <textarea name="description" rows="5" style="width: 100%; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem; padding: 1rem 1rem 1rem 3.5rem;"><?= htmlspecialchars($event->getDescription()); ?></textarea>
                     </div>
 
                     <div style="display: flex; gap: 20px;">

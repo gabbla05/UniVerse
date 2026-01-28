@@ -7,7 +7,7 @@ require_once __DIR__ .'/../services/EmailService.php';
 
 class EventController extends AppController {
 
-    const MAX_FILE_SIZE = 1024 * 1024;
+    const MAX_FILE_SIZE = 1024 * 1024 * 20; // To jest 20 MB
     const SUPPORTED_TYPES = ['image/png', 'image/jpeg'];
     const UPLOAD_DIRECTORY = '/../public/uploads/';
 
@@ -71,9 +71,20 @@ class EventController extends AppController {
                 $_SESSION['user_id']
             );
 
-            $this->eventRepository->addEvent($event);
-            header("Location: /dashboard");
-            return;
+            try {
+                $this->eventRepository->addEvent($event);
+                header("Location: /dashboard");
+                return;
+            } catch (PDOException $e) {
+                // Sprawdzamy czy komunikat błędu zawiera nasz tekst z bazy danych
+                if (strpos($e->getMessage(), 'Event date must be in the future') !== false) {
+                    $this->messages[] = 'Event date must be in the future!';
+                } else {
+                    // Inny błąd bazy danych
+                    $this->messages[] = 'Database error: ' . $e->getMessage();
+                }
+                // Nie robimy return, kod poleci dalej i wyświetli formularz z błędem
+            }
         }
         
         // W razie błędu walidacji też musimy podać wydziały
@@ -117,12 +128,36 @@ class EventController extends AppController {
                 $_POST['location'],
                 $_POST['category'],
                 $event->getUniversityId(),
-                $facultyId, // <-- Update wydziału
+                $facultyId,
                 $event->getCreatorId()
             );
+            
+            // Ważne: musimy ustawić ID, żeby formularz wiedział co edytujemy w razie błędu
+            $updatedEvent->setId($id); 
 
-            $this->eventRepository->updateEvent($id, $updatedEvent);
-            header("Location: /dashboard");
+            // --- NOWA OBSŁUGA BŁĘDÓW PRZY EDYCJI ---
+            try {
+                $this->eventRepository->updateEvent($id, $updatedEvent);
+                header("Location: /dashboard");
+                return;
+            } catch (PDOException $e) {
+                if (strpos($e->getMessage(), 'Event date must be in the future') !== false) {
+                    $this->messages[] = 'Event date must be in the future!';
+                } else {
+                    $this->messages[] = 'Database error: ' . $e->getMessage();
+                }
+
+                // Musimy znowu pobrać wydziały, bo renderujemy widok od nowa
+                $faculties = $this->universityRepository->getFacultiesForSelect($_SESSION['user_university_id']);
+                
+                // Renderujemy formularz z wpisanymi przez Ciebie danymi ($updatedEvent) i błędem
+                return $this->render('edit_event', [
+                    'event' => $updatedEvent, 
+                    'faculties' => $faculties, 
+                    'messages' => $this->messages
+                ]);
+            }
+            // ----------------------------------------
         }
     }
 

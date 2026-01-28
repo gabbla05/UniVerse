@@ -207,7 +207,18 @@ class SecurityController extends AppController {
         }
 
         if (empty($messages) || $messages[0] === 'Password changed successfully.') {
-             header("Location: /profile");
+             // Sprawdzamy rolę, żeby wiedzieć gdzie odesłać po sukcesie
+             if (isset($_SESSION['user_role'])) {
+                 if ($_SESSION['user_role'] === 'app_admin') {
+                     header("Location: /admin");
+                 } elseif ($_SESSION['user_role'] === 'uni_admin') {
+                     header("Location: /dashboard"); // <--- Admin Uczelni idzie tutaj
+                 } else {
+                     header("Location: /profile");   // Student idzie tutaj
+                 }
+             } else {
+                 header("Location: /profile");
+             }
         } else {
              return $this->render('edit_profile', ['user' => $user, 'messages' => $messages]);
         }
