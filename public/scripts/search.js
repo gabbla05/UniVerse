@@ -1,16 +1,18 @@
 const search = document.querySelector('input[placeholder="Search"]');
 const eventContainer = document.querySelector('.events-grid');
-const filterButtons = document.querySelectorAll('.filter-btn:not(#archive-btn)');
-const archiveBtn = document.getElementById('archive-btn');
+const filterSelect = document.querySelector('.filters');
+const dropdownBtn = document.querySelector('.dropdown-btn');
+const dropdownContent = document.querySelector('.dropdown-content');
 
+// Zmień początek pliku, żeby pamiętał kategorię
 let currentCategory = 'All'; 
 let isArchiveMode = false;
 
-// Funkcja pobierająca wydarzenia
 function fetchEvents(query = "") {
     const data = {
         search: query,
-        isArchive: isArchiveMode
+        isArchive: isArchiveMode,
+        filter: currentCategory // Dodajemy to!
     };
 
     fetch("/search", {
@@ -25,6 +27,29 @@ function fetchEvents(query = "") {
     .catch(error => console.error('Error fetching events:', error));
 }
 
+// Obsługa zmiany w select
+if (filterSelect) {
+    filterSelect.addEventListener('change', function() {
+        const value = this.value;
+        if (value === 'Archive') {
+            isArchiveMode = true;
+            currentCategory = 'All';
+        } else {
+            isArchiveMode = false;
+            currentCategory = value;
+        }
+        fetchEvents(search.value);
+    });
+}
+
+// Obsługa dropdown
+if (dropdownBtn && dropdownContent) {
+    dropdownBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+    });
+}
+
 // Uruchomienie przy starcie
 document.addEventListener("DOMContentLoaded", () => {
     fetchEvents(""); 
@@ -36,32 +61,16 @@ search.addEventListener("keyup", function (event) {
     fetchEvents(this.value);
 });
 
-// Obsługa filtrów kategorii
-filterButtons.forEach(button => {
-    button.addEventListener('click', function() {
-        if (isArchiveMode) {
+// Obsługa selecta
+if (filterSelect) {
+    filterSelect.addEventListener('change', function() {
+        const value = this.value;
+        if (value === 'Archive') {
+            isArchiveMode = true;
+        } else {
             isArchiveMode = false;
-            if(archiveBtn) {
-                archiveBtn.classList.remove('active');
-                archiveBtn.style.backgroundColor = "transparent";
-                archiveBtn.style.color = "#ef4444";
-            }
+            currentCategory = value;
         }
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-        currentCategory = this.innerText; 
-        fetchEvents(search.value);
-    });
-});
-
-// Obsługa archiwum
-if (archiveBtn) {
-    archiveBtn.addEventListener('click', function() {
-        isArchiveMode = true;
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-        this.style.backgroundColor = "#ef4444";
-        this.style.color = "white";
         fetchEvents(search.value);
     });
 }

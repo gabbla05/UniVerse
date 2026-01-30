@@ -309,3 +309,77 @@ button:active { transform: scale(0.98); }
     .register-right { padding: 2rem; }
     .logo-container { justify-content: center; }
 }
+
+@media screen and (max-width: 480px) {
+    .register-right {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        font-size: 0.8rem;
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    input, select {
+        font-size: 0.9rem;
+        padding: 0.875rem 0.875rem 0.875rem 3rem;
+    }
+
+    .input-icon, .select-arrow {
+        left: 14px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .select-arrow {
+        right: 14px;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 0.875rem;
+        margin-top: 0.75rem;
+    }
+
+    .checkbox-container {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .terms-label {
+        font-size: 0.85rem;
+        line-height: 20px;
+    }
+
+    .terms-label::before {
+        height: 18px;
+        width: 18px;
+        top: 1px;
+    }
+
+    .terms-label::after {
+        left: 5px;
+        top: 6px;
+        width: 6px;
+        height: 6px;
+    }
+
+    .signup-link {
+        font-size: 0.85rem;
+        margin-top: 1.5rem;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+    }
+}

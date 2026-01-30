@@ -186,7 +186,6 @@ class EventController extends AppController {
         header("Location: /dashboard");
     }
 
-    // --- ZMODYFIKOWANA METODA SEARCH ---
     public function search() {
         $this->ensureSession();
         $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
@@ -201,21 +200,27 @@ class EventController extends AppController {
             $userId = $_SESSION['user_id'] ?? 0;
             $universityId = $_SESSION['user_university_id'] ?? 0;
             
-            // Pobieramy flagę archiwum (domyślnie false)
+            // Pobieramy flagi
             $isArchive = isset($decoded['isArchive']) && $decoded['isArchive'] === true;
+            // Pobieramy filtr kategorii (np. 'Workshops')
+            $categoryFilter = $decoded['filter'] ?? 'All';
 
-            // ZABEZPIECZENIE: Student nie może przeglądać archiwum
-            // Jeśli user to student, wymuszamy isArchive = false
             if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user') {
                 $isArchive = false;
                 $facultyId = $_SESSION['user_faculty_id'] ?? null;
             } else {
-                // Admin widzi wszystko (facultyId = null) i może widzieć archiwum
                 $facultyId = null;
             }
 
-            // Przekazujemy $isArchive do repozytorium
-            $events = $this->eventRepository->getEventsByTitle($decoded['search'], $userId, $universityId, $facultyId, $isArchive);
+            // Przekazujemy kategorię do repozytorium (ostatni parametr)
+            $events = $this->eventRepository->getEventsByTitle(
+                $decoded['search'], 
+                $userId, 
+                $universityId, 
+                $facultyId, 
+                $isArchive, 
+                $categoryFilter // <-- NOWOŚĆ
+            );
             
             $eventsArray = [];
             foreach ($events as $event) {

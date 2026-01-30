@@ -79,9 +79,8 @@ class EventRepository extends Repository {
         return $evt;
     }
 
-    // --- ZMODYFIKOWANA METODA SEARCH ---
-    // Dodano parametr $isArchive
-    public function getEventsByTitle(string $searchString, int $userId, int $universityId, ?int $facultyId = null, bool $isArchive = false) {
+    // --- ZMODYFIKOWANA METODA SEARCH (z obsługą kategorii) ---
+    public function getEventsByTitle(string $searchString, int $userId, int $universityId, ?int $facultyId = null, bool $isArchive = false, ?string $category = null) {
         $searchString = '%' . strtolower($searchString) . '%';
 
         $sql = '
@@ -95,10 +94,8 @@ class EventRepository extends Repository {
 
         // 1. FILTRACJA DATY (ARCHIWUM vs AKTUALNE)
         if ($isArchive) {
-            // Archiwum: starsze niż 24h temu
             $sql .= " AND e.date <= (NOW() - INTERVAL '1 DAY')";
         } else {
-            // Aktualne: od teraz (minus 24h buforu, żeby nie znikały w trakcie trwania) w przyszłość
             $sql .= " AND e.date > (NOW() - INTERVAL '1 DAY')";
         }
 
@@ -107,12 +104,15 @@ class EventRepository extends Repository {
             $sql .= ' AND (e.faculty_id IS NULL OR e.faculty_id = :facId)';
         }
 
-        // 3. SORTOWANIE
+        // 3. FILTRACJA KATEGORII (NOWOŚĆ)
+        if ($category && $category !== 'All' && $category !== 'Archive') {
+            $sql .= ' AND e.category = :category';
+        }
+
+        // 4. SORTOWANIE
         if ($isArchive) {
-            // W archiwum chcemy widzieć "najświeższe starocie" na górze
             $sql .= ' ORDER BY e.date DESC';
         } else {
-            // W aktualnych chcemy "najbliższe" na górze
             $sql .= ' ORDER BY e.date ASC';
         }
 
@@ -124,6 +124,11 @@ class EventRepository extends Repository {
         
         if ($facultyId) {
             $stmt->bindParam(':facId', $facultyId, PDO::PARAM_INT);
+        }
+        
+        // Podpinamy parametr kategorii, jeśli jest używany
+        if ($category && $category !== 'All' && $category !== 'Archive') {
+            $stmt->bindParam(':category', $category, PDO::PARAM_STR);
         }
 
         $stmt->execute();

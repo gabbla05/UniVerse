@@ -14,12 +14,25 @@
         </div>
         <div class="nav-actions">
             <span class="admin-name">Logged as: <strong>App Admin</strong></span>
-            
-            <a href="/edit-profile" style="color: var(--text-gray); font-size: 0.9rem; margin-right: 15px; text-decoration: none;">
-                Change Password
-            </a>
-            
-            <a href="/logout" class="btn-logout">Log out</a>
+    
+            <div class="nav-desktop-links">
+                <a href="/edit-profile">Change Password</a>
+                <a href="/logout" class="btn-logout">Log out</a>
+            </div>
+    
+            <div class="dropdown-mobile">
+                <button class="dropdown-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                    </svg>
+                </button>
+                <div class="dropdown-content">
+                    <a href="/edit-profile">Change Password</a>
+                    <a href="/logout" class="logout-link">Log out</a>
+                </div>
+            </div>
         </div>
     </nav>
 

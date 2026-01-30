@@ -18,13 +18,7 @@
             <span class="logo-text">UniVerse</span>
         </div>
         <div class="nav-links">
-             <a href="/dashboard" class="nav-item">Back to events</a>
-             <div class="user-menu">
-                <span style="color: var(--text-gray); font-size: 0.9rem; margin-right: 15px;">
-                    <?= htmlspecialchars($_SESSION['user_email'] ?? 'Guest'); ?>
-                </span>
-                <a href="/logout" class="nav-item" style="color: #ef4444;">Log out</a>
-            </div>
+            <a href="/dashboard" class="nav-item back-btn">Back to events</a>
         </div>
     </nav>
 

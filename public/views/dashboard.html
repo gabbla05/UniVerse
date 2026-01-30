@@ -12,23 +12,45 @@
             <img src="/public/img/logo.png" alt="UniVerse Logo" class="logo-img">
             <span class="logo-text">UniVerse</span>
         </div>
+
         <div class="nav-links">
-            
-            <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
-                <a href="/profile" class="nav-item">Profile</a>
-            <?php endif; ?>
-            
-            <div class="user-menu">
-                <span style="color: var(--text-gray); font-size: 0.9rem; margin-right: 15px;">
+        
+            <div class="nav-desktop-links">
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
+                    <a href="/profile" class="nav-item">Profile</a>
+                <?php endif; ?>
+
+                <span class="user-email-display">
                     <?= htmlspecialchars($_SESSION['user_email'] ?? 'Guest'); ?>
                 </span>
 
                 <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
-                    <a href="/edit-profile" class="nav-item" style="margin-right: 15px; text-decoration: none; color: var(--text-gray);">Change Password</a>
+                    <a href="/edit-profile" class="nav-item">Change Password</a>
                 <?php endif; ?>
-
-                <a href="/logout" class="nav-item" style="color: #ef4444;">Log out</a>
+                <a href="/logout" class="nav-item logout-red">Log out</a>
             </div>
+
+            <div class="logged-as">
+                Logged as: <?= htmlspecialchars($_SESSION['user_email'] ?? 'Guest'); ?>
+            </div>
+
+            <div class="dropdown-mobile">
+                <button class="dropdown-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                    </svg>
+                </button>
+                <div class="dropdown-content">
+                    <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
+                        <a href="/profile">Profile</a>
+                    <?php endif; ?>
+                    <a href="/edit-profile">Change Password</a>
+                    <a href="/logout" class="logout-link">Log out</a>
+                </div>
+            </div>
+
         </div>
     </nav>
 
@@ -46,16 +68,15 @@
         </div>
 
         <div class="toolbar">
-            <div class="filters">
-                <button class="filter-btn active" data-category="All">All</button>
-                <button class="filter-btn" data-category="Workshops">Workshops</button>
-                <button class="filter-btn" data-category="Parties">Parties</button>
-                <button class="filter-btn" data-category="Sport">Sport</button>
-                
+            <select class="filters">
+                <option value="All">All Categories</option>
+                <option value="Workshops">Workshops</option>
+                <option value="Parties">Parties</option>
+                <option value="Sport">Sport</option>
                 <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
-                    <div style="width: 1px; height: 24px; background: #334155; margin: 0 10px;"></div> <button class="filter-btn" id="archive-btn" style="color: #ef4444; border-color: #ef4444;">Archive</button>
+                    <option value="Archive">Archive</option>
                 <?php endif; ?>
-            </div>
+            </select>
             
             <div class="search-bar">
                 <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>

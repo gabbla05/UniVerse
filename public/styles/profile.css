@@ -184,3 +184,76 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(24px);
 }
+
+/* RESPANSYWNOŚĆ */
+@media screen and (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    .profile-card {
+        padding: 2rem;
+        max-width: 100%;
+    }
+
+    .user-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .avatar-circle {
+        width: 60px;
+        height: 60px;
+    }
+
+    .avatar-circle svg {
+        width: 30px;
+        height: 30px;
+    }
+
+    .user-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .user-info p {
+        font-size: 0.9rem;
+    }
+
+    .form-section h3 {
+        font-size: 1.2rem;
+    }
+
+    .input-group input {
+        font-size: 0.9rem;
+        padding: 0.875rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.75rem 1.5rem;
+    }
+
+    .switch {
+        transform: scale(0.9);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .profile-card {
+        padding: 1rem;
+    }
+
+    .user-info h2 {
+        font-size: 1.25rem;
+    }
+
+    .form-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+        margin-bottom: 1rem;
+    }
+}

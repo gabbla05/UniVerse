@@ -43,16 +43,15 @@
                         <textarea name="description" rows="5" style="width: 100%; border-radius: 12px; border: 1px solid var(--input-border); background-color: var(--bg-dark); color: white; outline: none; margin-bottom: 1.5rem; padding: 1rem 1rem 1rem 3.5rem;"><?= htmlspecialchars($event->getDescription()); ?></textarea>
                     </div>
 
-                    <div style="display: flex; gap: 20px;">
-                        <div style="flex: 1;">
+                    <div class="row-date-location">
+                        <div class="date-col">
                             <label>Date & Time</label>
                             <div class="input-group">
                                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                 <input name="date" type="datetime-local" value="<?= htmlspecialchars(date('Y-m-d\TH:i', strtotime($event->getDate()))); ?>" required>
                             </div>
                         </div>
-                        
-                        <div style="flex: 1;">
+                        <div class="location-col">
                             <label>Location</label>
                             <div class="input-group">
                                 <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="top: 50%; transform: translateY(-50%);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>

@@ -174,6 +174,7 @@ button {
     font-size: 1.125rem;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
+    margin-top: 2.5rem;
 }
 
 button:hover {
@@ -211,5 +212,57 @@ button:active {
     .logo-container {
         top: 1.5rem;
         right: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .login-right {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+
+    label {
+        font-size: 0.8rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    input {
+        font-size: 0.9rem;
+        padding: 0.875rem 0.875rem 0.875rem 3rem;
+    }
+
+    .input-icon {
+        left: 14px;
+        width: 18px;
+        height: 18px;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 0.875rem;
+        margin-top: 2rem;
+    }
+
+    .logo-container {
+        top: 1rem;
+        right: 1rem;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+    }
+
+    .signup-link {
+        font-size: 0.85rem;
+        margin-top: 1.5rem;
     }
 }
