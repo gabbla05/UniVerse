@@ -82,6 +82,8 @@
                             <option value="Workshops" <?= $event->getCategory() == 'Workshops' ? 'selected' : '' ?>>Workshops</option>
                             <option value="Parties" <?= $event->getCategory() == 'Parties' ? 'selected' : '' ?>>Parties</option>
                             <option value="Sport" <?= $event->getCategory() == 'Sport' ? 'selected' : '' ?>>Sport</option>
+                            <option value="Culture" <?php if($event->getCategory() == 'Culture') echo 'selected'; ?>>Culture</option>
+                            <option value="Charity" <?php if($event->getCategory() == 'Charity') echo 'selected'; ?>>Charity</option>
                             <option value="Other" <?= $event->getCategory() == 'Other' ? 'selected' : '' ?>>Other</option>
                         </select>
                     </div>

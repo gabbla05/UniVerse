@@ -31,6 +31,26 @@ class EmailService {
         }
     }
 
+    public function sendNewEventNotification($userEmail, $eventTitle, $eventDate) {
+        $subject = "New Event at your Uni: $eventTitle";
+        
+        $message = "Hello!\n\n";
+        $message .= "Good news! A new event '$eventTitle' has just been added to your university calendar.\n";
+        $message .= "It takes place on: $eventDate.\n\n";
+        $message .= "Log in to UniVerse to check the details and join!\n\n";
+        $message .= "Cheers,\nUniVerse Team";
+
+        // Logowanie do pliku (Atrapa)
+        $this->saveToTextFile($userEmail, $subject, $message);
+
+        // Wysyłka prawdziwa
+        try {
+            $this->sendViaGmail($userEmail, $subject, $message);
+        } catch (Exception $e) {
+            error_log("Failed to send new event email: " . $e->getMessage());
+        }
+    }
+
     // --- 2. METODA "ATRAPA" (Zapis do pliku tekstowego) ---
     private function saveToTextFile($to, $subject, $message) {
         // Tworzymy unikalną nazwę pliku

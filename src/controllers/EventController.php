@@ -1,10 +1,13 @@
 <?php
 
 require_once 'AppController.php';
-require_once __DIR__ .'/../models/Event.php';
-require_once __DIR__ .'/../repository/EventRepository.php';
-require_once __DIR__ .'/../services/EmailService.php';
+require_once __DIR__ . '/../models/Event.php';
+require_once __DIR__ . '/../repository/EventRepository.php';
+require_once __DIR__ . '/../repository/UniversityRepository.php';
 
+// --- TO SĄ TE DWIE LINIE, KTÓRYCH CI BRAKUJE: ---
+require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../services/EmailService.php';
 class EventController extends AppController {
 
     const MAX_FILE_SIZE = 1024 * 1024 * 20; // To jest 20 MB
@@ -59,6 +62,7 @@ class EventController extends AppController {
             // Obsługa wydziału: jeśli wybrano "All" (pusty string), wstaw NULL
             $facultyId = !empty($_POST['faculty']) ? $_POST['faculty'] : null;
 
+            // Tworzymy obiekt z pełnymi danymi (tak jak miałaś)
             $event = new Event(
                 $_POST['title'],
                 $_POST['description'],
@@ -67,25 +71,62 @@ class EventController extends AppController {
                 $_POST['location'],
                 $_POST['category'],
                 $_SESSION['user_university_id'],
-                $facultyId, // <-- Przekazujemy wydział
+                $facultyId, // <-- Twój wydział tu jest bezpieczny
                 $_SESSION['user_id']
             );
 
             try {
+                // 1. Zapis do bazy
                 $this->eventRepository->addEvent($event);
+
+                // =========================================================
+                // START: NOWA LOGIKA WYSYŁANIA MAILI
+                // =========================================================
+                
+                // A. Pobieramy studentów z tej uczelni
+                // Musimy utworzyć instancję UserRepository, bo nie mamy jej w konstruktorze EventControllera
+                $userRepository = new UserRepository();
+                $students = $userRepository->getStudentsByUniversityId($_SESSION['user_university_id']);
+
+                // B. Inicjujemy serwis mailowy
+                $emailService = new \src\services\EmailService();
+
+                // C. Wysyłamy powiadomienia
+                // C. Lecimy pętlą i sprawdzamy komu wysłać
+                foreach ($students as $student) {
+    
+                    $eventFacultyId = $event->getFacultyId();
+                    // Zakładam, że w modelu User masz metodę getFacultyId() - zobacz uwagę niżej!
+                    $studentFacultyId = $student->getFacultyId(); 
+
+                    // WARUNEK:
+                    // 1. Jeśli event nie ma przypisanego wydziału (jest dla wszystkich) -> Wyślij
+                    // 2. LUB jeśli ID wydziału eventu zgadza się z ID wydziału studenta -> Wyślij
+                    if (empty($eventFacultyId) || $eventFacultyId == $studentFacultyId) {
+        
+                        $emailService->sendNewEventNotification(
+                            $student->getEmail(), 
+                            $event->getTitle(),
+                            $event->getDate()
+                        );
+                    }
+        }
+                // =========================================================
+                // KONIEC LOGIKI EMAIL
+                // =========================================================
+
                 header("Location: /dashboard");
                 return;
+
             } catch (PDOException $e) {
-                // --- WYMÓG: Nie pokazuję surowych błędów użytkownikowi ---
+                // --- Obsługa błędów (Twoja logika) ---
                 error_log("Event creation error: " . $e->getMessage());
-                // Sprawdzamy czy komunikat błędu zawiera nasz tekst z bazy danych
+                
                 if (strpos($e->getMessage(), 'Event date must be in the future') !== false) {
                     $this->messages[] = 'Event date must be in the future!';
                 } else {
-                    // Inny błąd bazy danych - wyświetlam generyczną wiadomość
                     $this->messages[] = 'An error occurred while creating the event. Please try again.';
                 }
-                // Nie robimy return, kod poleci dalej i wyświetli formularz z błędem
             }
         }
         

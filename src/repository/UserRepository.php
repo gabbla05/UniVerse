@@ -117,4 +117,34 @@ class UserRepository extends Repository {
             $user['id']
         );
     }
+
+    public function getStudentsByUniversityId(int $universityId): array
+    {
+        // Pobieramy tylko użytkowników z rolą 'user' (studentów) z danej uczelni
+        $stmt = $this->database->connect()->prepare('
+            SELECT * FROM public.users 
+            WHERE university_id = :university_id AND role = \'user\'
+        ');
+        $stmt->bindParam(':university_id', $universityId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $users = [];
+        
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            // TERAZ KOLEJNOŚĆ JEST ZGODNA Z KONSTRUKTOREM User.php:
+            $users[] = new User(
+                $row['email'],
+                $row['password'],
+                $row['name'],
+                $row['surname'],
+                $row['student_id'] ?? null,    // 5. studentId
+                $row['university_id'] ?? null, // 6. universityId
+                $row['faculty_id'] ?? null,    // 7. facultyId (To jest kluczowe dla Twojego ifa!)
+                $row['role'],                  // 8. role
+                $row['id']                     // 9. id
+            );
+        }
+
+        return $users;
+    }
 }
