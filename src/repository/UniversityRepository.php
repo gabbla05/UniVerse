@@ -64,8 +64,6 @@ class UniversityRepository extends Repository {
         $stmt->execute([$facultyName, $universityId]);
     }
 
-    // --- NOWE METODY ---
-
     public function deleteUniversity(int $id) {
         $stmt = $this->database->connect()->prepare('DELETE FROM universities WHERE id = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -73,7 +71,6 @@ class UniversityRepository extends Repository {
     }
 
     public function getUniversityDetails(int $id): array {
-        // 1. Pobierz dane uczelni
         $stmt = $this->database->connect()->prepare('SELECT * FROM universities WHERE id = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -83,7 +80,6 @@ class UniversityRepository extends Repository {
             return [];
         }
 
-        // 2. Pobierz dane admina tej uczelni - --- WYMÓG: Tylko niezbędne kolumny ---
         $stmt = $this->database->connect()->prepare("
             SELECT id, name, surname, email FROM users 
             WHERE university_id = :id AND role = 'uni_admin' LIMIT 1
@@ -92,17 +88,15 @@ class UniversityRepository extends Repository {
         $stmt->execute();
         $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // 3. Pobierz listę wydziałów
         $stmt = $this->database->connect()->prepare('SELECT name FROM faculties WHERE university_id = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        $faculties = $stmt->fetchAll(PDO::FETCH_COLUMN); // Zwraca tablicę stringów ['Wydział A', 'Wydział B']
+        $faculties = $stmt->fetchAll(PDO::FETCH_COLUMN); 
 
-        // Zwracamy paczkę danych
         return [
             'university' => $university,
-            'admin' => $admin, // może być false jeśli brak admina
-            'faculties' => implode(', ', $faculties) // Zamieniamy tablicę na string "Wydział A, Wydział B" do textarea
+            'admin' => $admin, 
+            'faculties' => implode(', ', $faculties) 
         ];
     }
 
@@ -146,19 +140,15 @@ class UniversityRepository extends Repository {
         return $result;
     }
 
-    // Nowa metoda do zapisu wszystkiego naraz
     public function updateUniversityData(int $id, array $data) {
         $pdo = $this->database->connect();
         
         try {
-            $pdo->beginTransaction(); // Rozpoczynamy transakcję (wszystko albo nic)
+            $pdo->beginTransaction(); 
 
-            // 1. Aktualizacja Uczelni
             $stmt = $pdo->prepare('UPDATE universities SET name = ?, city = ? WHERE id = ?');
             $stmt->execute([$data['uni_name'], $data['uni_city'], $id]);
 
-            // 2. Aktualizacja Admina (jeśli istnieje)
-            // Zakładamy, że admin już jest. Jeśli chcesz tworzyć nowego przy edycji, trzeba by dodać logikę INSERT
             if (!empty($data['admin_email'])) {
                 $stmt = $pdo->prepare("
                     UPDATE users 
@@ -172,32 +162,23 @@ class UniversityRepository extends Repository {
                     $id
                 ]);
             }
-
-            // 3. Aktualizacja Wydziałów (Logika: Usuń stare -> Dodaj nowe z listy)
-            // Najbezpieczniejsza opcja przy edycji listy tekstowej:
             
-            // A. Pobierz obecne wydziały z bazy
             $stmt = $pdo->prepare('SELECT name FROM faculties WHERE university_id = ?');
             $stmt->execute([$id]);
             $currentFaculties = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-            // B. Przetwórz nowe wydziały z formularza
             $newFacultiesRaw = explode(',', $data['faculties']);
             $newFaculties = array_map('trim', $newFacultiesRaw);
-            $newFaculties = array_filter($newFaculties); // Usuń puste
+            $newFaculties = array_filter($newFaculties); 
 
-            // C. Usuń te, których nie ma w nowej liście
             $toDelete = array_diff($currentFaculties, $newFaculties);
             if (!empty($toDelete)) {
-                // Przygotuj placeholdery (?,?,?)
                 $placeholders = implode(',', array_fill(0, count($toDelete), '?'));
                 $stmt = $pdo->prepare("DELETE FROM faculties WHERE university_id = ? AND name IN ($placeholders)");
-                // Merge ID uczelni i nazwy do usunięcia
                 $params = array_merge([$id], array_values($toDelete));
                 $stmt->execute($params);
             }
 
-            // D. Dodaj te, które są nowe
             $toAdd = array_diff($newFaculties, $currentFaculties);
             if (!empty($toAdd)) {
                 $stmt = $pdo->prepare('INSERT INTO faculties (name, university_id) VALUES (?, ?)');
@@ -206,9 +187,9 @@ class UniversityRepository extends Repository {
                 }
             }
 
-            $pdo->commit(); // Zatwierdź zmiany
+            $pdo->commit(); 
         } catch (Exception $e) {
-            $pdo->rollBack(); // Cofnij w razie błędu
+            $pdo->rollBack(); 
             throw $e;
         }
     }
@@ -220,7 +201,6 @@ class UniversityRepository extends Repository {
         $stmt->execute([$name, $city, $id]);
     }
 
-    // Nowa metoda pomocnicza do pobierania listy wydziałów do selecta
     public function getFacultiesForSelect(int $universityId): array {
         $stmt = $this->database->connect()->prepare('
             SELECT id, name FROM faculties WHERE university_id = :id ORDER BY name ASC

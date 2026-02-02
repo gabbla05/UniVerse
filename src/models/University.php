@@ -4,8 +4,8 @@ class University {
     private $id;
     private $name;
     private $city;
-    private $adminName; // Nowe
-    private $faculties; // Nowe (tablica stringów)
+    private $adminName; 
+    private $faculties; 
 
     public function __construct($id, $name, $city, $adminName = null, $faculties = []) {
         $this->id = $id;

@@ -2,11 +2,8 @@
 
 class AppController {
 
-    // W pliku AppController.php
-
     protected function ensureSession() {
         if (session_status() === PHP_SESSION_NONE) {
-            // --- WYMÓG: Cookie sesyjne z flagą HttpOnly ---
             session_set_cookie_params([
                 'httponly' => true,
                 'secure' => true,
@@ -15,21 +12,13 @@ class AppController {
             session_start();
         }
         
-        // --- WYMÓG E1: Wymuszenie HTTPS w kodzie ---
-        // Sprawdzamy, czy połączenie jest szyfrowane (parametr przekazany przez Nginx)
         if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off") {
-            // Zamiast brutalnego die(), robimy przekierowanie (choć Nginx już to zrobił)
-            // Ale dla "zaliczenia kodu" można tu dać die() jak w poleceniu:
-            
-            // die("HTTPS required (Security Policy E1)");
-            
-            // LUB wersja soft (przekierowanie):
+            // https
             $redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $redirect);
             exit();
         }
-        // -------------------------------------------
     }
 
     protected function isGet(): bool
@@ -42,18 +31,15 @@ class AppController {
         return $_SERVER['REQUEST_METHOD'] === 'POST';
     }
 
-    // --- TO JEST METODA, KTÓRĄ MUSISZ POPRAWIĆ ---
     protected function render(string $template = null, array $variables = [])
     {
-        // 1. Upewnij się, że sesja działa
         $this->ensureSession();
 
-        // 2. Wygeneruj token CSRF, jeśli go nie ma w sesji
+        // generownanie CSRF tokenu
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
         
-        // 3. Przekaż token do widoku (żeby input w HTML nie był pusty)
         $variables['csrf_token'] = $_SESSION['csrf_token'];
 
         $templatePath = 'public/views/'. $template.'.html';
@@ -68,7 +54,6 @@ class AppController {
         }
         print $output;
     }
-    // ---------------------------------------------
 
     public function landing() {
         return $this->render('landing');

@@ -1,13 +1,9 @@
-/* Import czcionki Inter z Google Fonts */
-/* 1. Import głównej czcionki (Inter) */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* 2. Import TWOJEJ własnej czcionki dla Logo */
-/* Musisz wrzucić plik czcionki do folderu: public/fonts/TwojaCzcionka.ttf */
 @font-face {
     font-family: 'LogoFont';
     src: url('/public/fonts/TwojaCzcionka.ttf') format('truetype');
-    /* Jeśli masz plik .woff to: url('/public/fonts/TwojaCzcionka.woff') format('woff'); */
 }
 
 :root {
@@ -23,13 +19,10 @@
 body {
     margin: 0;
     padding: 0;
-    /* Inter dla całej strony */
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark); /* Tu jest ten granat! */
+    background-color: var(--bg-dark); 
     color: var(--text-white);
 }
-
-
 
 * {
     box-sizing: border-box;

@@ -4,7 +4,6 @@ const filterSelect = document.querySelector('.filters');
 const dropdownBtn = document.querySelector('.dropdown-btn');
 const dropdownContent = document.querySelector('.dropdown-content');
 
-// Zmień początek pliku, żeby pamiętał kategorię
 let currentCategory = 'All'; 
 let isArchiveMode = false;
 
@@ -12,7 +11,7 @@ function fetchEvents(query = "") {
     const data = {
         search: query,
         isArchive: isArchiveMode,
-        filter: currentCategory // Dodajemy to!
+        filter: currentCategory 
     };
 
     fetch("/search", {
@@ -27,7 +26,6 @@ function fetchEvents(query = "") {
     .catch(error => console.error('Error fetching events:', error));
 }
 
-// Obsługa zmiany w select
 if (filterSelect) {
     filterSelect.addEventListener('change', function() {
         const value = this.value;
@@ -42,7 +40,6 @@ if (filterSelect) {
     });
 }
 
-// Obsługa dropdown
 if (dropdownBtn && dropdownContent) {
     dropdownBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -50,18 +47,15 @@ if (dropdownBtn && dropdownContent) {
     });
 }
 
-// Uruchomienie przy starcie
 document.addEventListener("DOMContentLoaded", () => {
     fetchEvents(""); 
 });
 
-// Obsługa wyszukiwarki
 search.addEventListener("keyup", function (event) {
     if (event.key === "Enter") event.preventDefault();
     fetchEvents(this.value);
 });
 
-// Obsługa selecta
 if (filterSelect) {
     filterSelect.addEventListener('change', function() {
         const value = this.value;
@@ -75,7 +69,6 @@ if (filterSelect) {
     });
 }
 
-// Renderowanie kafelków
 function renderEvents(events) {
     eventContainer.innerHTML = "";
 
@@ -95,7 +88,6 @@ function renderEvents(events) {
     });
 }
 
-// Tworzenie pojedynczego kafelka
 function createEventCard(event) {
     let adminActions = '';
     

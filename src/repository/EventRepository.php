@@ -24,7 +24,6 @@ class EventRepository extends Repository {
         ]);
     }
 
-    // ZMIANA: Domyślnie pobieramy tylko NADCHODZĄCE (plus 24h wstecz)
     public function getEvents(int $universityId): array {
         $result = [];
         $stmt = $this->database->connect()->prepare("
@@ -79,7 +78,6 @@ class EventRepository extends Repository {
         return $evt;
     }
 
-    // --- ZMODYFIKOWANA METODA SEARCH (z obsługą kategorii) ---
     public function getEventsByTitle(string $searchString, int $userId, int $universityId, ?int $facultyId = null, bool $isArchive = false, ?string $category = null) {
         $searchString = '%' . strtolower($searchString) . '%';
 
@@ -92,24 +90,20 @@ class EventRepository extends Repository {
             AND e.university_id = :uniId
         ';
 
-        // 1. FILTRACJA DATY (ARCHIWUM vs AKTUALNE)
         if ($isArchive) {
             $sql .= " AND e.date <= (NOW() - INTERVAL '1 DAY')";
         } else {
             $sql .= " AND e.date > (NOW() - INTERVAL '1 DAY')";
         }
 
-        // 2. FILTRACJA WYDZIAŁU
         if ($facultyId) {
             $sql .= ' AND (e.faculty_id IS NULL OR e.faculty_id = :facId)';
         }
 
-        // 3. FILTRACJA KATEGORII (NOWOŚĆ)
         if ($category && $category !== 'All' && $category !== 'Archive') {
             $sql .= ' AND e.category = :category';
         }
 
-        // 4. SORTOWANIE
         if ($isArchive) {
             $sql .= ' ORDER BY e.date DESC';
         } else {
@@ -126,7 +120,6 @@ class EventRepository extends Repository {
             $stmt->bindParam(':facId', $facultyId, PDO::PARAM_INT);
         }
         
-        // Podpinamy parametr kategorii, jeśli jest używany
         if ($category && $category !== 'All' && $category !== 'Archive') {
             $stmt->bindParam(':category', $category, PDO::PARAM_STR);
         }
@@ -170,7 +163,6 @@ class EventRepository extends Repository {
         $stmt->execute([$userId, $eventId]);
     }
 
-    // Dla studenta: Pokaż wydarzenia z jego uczelni (ogólne LUB jego wydziału)
     public function getStudentEvents(int $universityId, int $facultyId): array {
         $result = [];
         $stmt = $this->database->connect()->prepare("
@@ -192,7 +184,6 @@ class EventRepository extends Repository {
         return $result;
     }
 
-    // Dla profilu: Pokaż wydarzenia, na które user się zapisał
     public function getJoinedEvents(int $userId): array {
         $result = [];
         $stmt = $this->database->connect()->prepare('
@@ -212,7 +203,6 @@ class EventRepository extends Repository {
         return $result;
     }
 
-    // Sprawdzenie czy user jest już zapisany (żeby wyświetlić guzik Join lub Leave)
     public function isJoined(int $userId, int $eventId): bool {
         $stmt = $this->database->connect()->prepare('
             SELECT 1 FROM event_participants WHERE user_id = ? AND event_id = ?
@@ -221,7 +211,6 @@ class EventRepository extends Repository {
         return (bool)$stmt->fetch();
     }
 
-    // Pomocnicza metoda, żeby nie powielać kodu tworzenia obiektu (opcjonalnie, można też kopiować kod z getEvents)
     private function mapEvent(array $event): Event {
         $evt = new Event(
             $event['title'], $event['description'], $event['image_url'],

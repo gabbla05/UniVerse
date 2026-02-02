@@ -24,7 +24,6 @@ class Event {
         $this->creatorId = $creatorId;
     }
 
-    // --- Gettery i Settery ---
     public function getId() { return $this->id; }
     public function setId($id) { $this->id = $id; }
     public function getTitle() { return $this->title; }

@@ -17,7 +17,7 @@ searchInput.addEventListener("keyup", function (event) {
     })
     .then(response => response.json())
     .then(universities => {
-        tableBody.innerHTML = ""; // Czyścimy tabelę
+        tableBody.innerHTML = ""; 
         
         if (universities.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: #94A3B8; padding: 2rem;">No universities found.</td></tr>';
@@ -32,7 +32,7 @@ searchInput.addEventListener("keyup", function (event) {
 });
 
 function createUniversityRow(uni) {
-    // 1. Budowanie listy wydziałów
+   
     let facultiesHtml = '';
     if (!uni.faculties || uni.faculties.length === 0) {
         facultiesHtml = '<span style="color: var(--text-gray); font-size: 0.8rem;">No faculties</span>';
@@ -48,7 +48,6 @@ function createUniversityRow(uni) {
         `;
     }
 
-    // 2. Szablon wiersza
     const row = `
         <tr>
             <td>${uni.id}</td>

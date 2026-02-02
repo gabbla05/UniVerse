@@ -8,10 +8,9 @@ class Database {
 
     public function __construct()
     {
-        // Dane biorę z Twojego docker/db/Dockerfile i docker-compose
         $this->username = 'docker';
         $this->password = 'docker';
-        $this->host = 'db'; // nazwa serwisu w docker-compose
+        $this->host = 'db'; 
         $this->database = 'db';
     }
 
@@ -25,12 +24,10 @@ class Database {
                 ["sslmode"  => "prefer"]
             );
 
-            // Ustawienie trybu błędów na wyjątki (ważne do debugowania!)
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $conn;
         }
         catch(PDOException $e) {
-            // --- WYMÓG: Nie pokazuję surowych błędów użytkownikowi ---
             error_log("Database connection error: " . $e->getMessage());
             die("Connection failed. Please try again later.");
         }

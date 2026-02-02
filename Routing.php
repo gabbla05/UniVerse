@@ -103,30 +103,22 @@ class Routing {
         $actionUrl = explode("/", $url)[0];
 
         if (!array_key_exists($actionUrl, self::$routes)) {
-            // --- WYMÓG: Zwracam sensowny kod HTTP zamiast die() ---
             http_response_code(404);
             include 'public/views/404.html';
             return;
         }
 
-        // 1. Wyciągamy konfigurację dla danej ścieżki (to jest tablica!)
         $routeConfig = self::$routes[$actionUrl];
         
-        // 2. Pobieramy nazwę klasy i metody z tej tablicy
         $controllerName = $routeConfig['controller'];
         $actionName = $routeConfig['action'];
 
-        // 3. Tworzymy obiekt (np. new AppController)
         $object = new $controllerName;
 
         $id = $_GET['id'] ?? null;
-
-        // --- POCZĄTEK ZMIANY: OBSŁUGA ADNOTACJI (PHP 8 Attributes) ---
         
-        // Sprawdzamy, czy metoda w ogóle istnieje w klasie
         if (method_exists($object, $actionName)) {
             
-            // Używamy $controllerName i $actionName do refleksji
             $reflection = new ReflectionMethod($controllerName, $actionName);
             $attributes = $reflection->getAttributes(AllowedMethods::class);
 
@@ -135,16 +127,13 @@ class Routing {
                 $currentMethod = $_SERVER['REQUEST_METHOD'];
 
                 if (!in_array($currentMethod, $allowedMethods)) {
-                    // Blokada metody (np. wchodzisz GET na POST)
                     http_response_code(405); 
                     include 'public/views/404.html'; 
                     return;
                 }
             }
         }
-        // --- KONIEC ZMIANY ---
 
-        // Wywołujemy metodę kontrolera
         $object->$actionName($id);
     }
 }

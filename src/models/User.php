@@ -9,7 +9,7 @@ class User {
     private $universityId;
     private $facultyId;
     private $role;
-    private $id; // NOWE POLE
+    private $id; 
 
     public function __construct(
         string $email, 
@@ -20,7 +20,7 @@ class User {
         ?int $universityId = null,
         ?int $facultyId = null,
         string $role = 'user',
-        ?int $id = null // NOWY ARGUMENT (na końcu)
+        ?int $id = null 
     ) {
         $this->email = $email;
         $this->password = $password;
@@ -30,10 +30,9 @@ class User {
         $this->universityId = $universityId;
         $this->facultyId = $facultyId;
         $this->role = $role;
-        $this->id = $id; // Przypisujemy ID
+        $this->id = $id; 
     }
 
-    // ... stare gettery ...
     public function getEmail(): string { return $this->email; }
     public function getPassword(): string { return $this->password; }
     public function getName(): string { return $this->name; }
@@ -42,7 +41,5 @@ class User {
     public function getUniversityId(): ?int { return $this->universityId; }
     public function getFacultyId(): ?int { return $this->facultyId; }
     public function getRole(): string { return $this->role; }
-    
-    // NOWY GETTER
     public function getId(): ?int { return $this->id; }
 }

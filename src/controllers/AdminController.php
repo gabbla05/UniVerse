@@ -1,7 +1,6 @@
 <?php
 
-// IMPORTY DLA ADNOTACJI I KLAS
-require_once 'src/attributes/AllowedMethods.php'; // <--- WAŻNE: To ładuje klasę adnotacji
+require_once 'src/attributes/AllowedMethods.php'; 
 require_once __DIR__ . '/AppController.php';
 require_once __DIR__ . '/../models/University.php';
 require_once __DIR__ . '/../models/User.php';
@@ -21,7 +20,6 @@ class AdminController extends AppController {
         $this->eventRepository = new EventRepository();
     }
 
-    // Wyświetlanie panelu admina (Domyślnie GET)
     #[AllowedMethods(['GET'])]
     public function admin() {
         $this->ensureSession();
@@ -34,7 +32,6 @@ class AdminController extends AppController {
         return $this->render('admin', ['universities' => $universities]);
     }
 
-    // Dodawanie uczelni (Formularz wysyłany POSTem)
     #[AllowedMethods(['POST'])]
     public function addUniversity() {
         $this->ensureSession();
@@ -51,12 +48,9 @@ class AdminController extends AppController {
         $adminEmail = trim($_POST['admin_email']);
         $adminPassword = $_POST['admin_password'];
 
-        // --- ZABEZPIECZENIE C1: Walidacja emaila admina uczelni ---
         if (!filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
-            // W panelu admina możemy rzucić wyjątek lub die(), bo to błąd operatora
             die("Błąd: Nieprawidłowy format adresu email administratora uczelni!");
         }
-        // ----------------------------------------------------------
 
         $newUniId = $this->universityRepository->addUniversity($uniName, $uniCity);
 
@@ -86,7 +80,6 @@ class AdminController extends AppController {
         header("Location: /admin");
     }
 
-    // Usuwanie uczelni (Link GET)
     #[AllowedMethods(['GET'])]
     public function deleteUniversity() {
         $this->ensureSession();
@@ -103,7 +96,6 @@ class AdminController extends AppController {
         header("Location: /admin");
     }
 
-    // Wyszukiwanie AJAX (POST)
     #[AllowedMethods(['POST'])]
     public function searchUniversities() {
         $this->ensureSession();
@@ -138,8 +130,6 @@ class AdminController extends AppController {
         }
     }
 
-    // Edycja uczelni (GET - formularz, POST - zapis)
-    // Tu nie dajemy adnotacji, bo jedna funkcja obsługuje obie metody (Twoja logika w środku)
     public function editUniversity() {
         $this->ensureSession();
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'app_admin') {
@@ -165,18 +155,16 @@ class AdminController extends AppController {
         if ($this->isPost()) {
             $adminEmail = $_POST['admin_email'];
 
-            // --- ZABEZPIECZENIE C1 (BINGO) ---
             if (!filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
                 die("Błąd: Nieprawidłowy format adresu email!");
             }
-            // ---------------------------------
 
             $updateData = [
                 'uni_name' => $_POST['name'],
                 'uni_city' => $_POST['city'],
                 'admin_name' => $_POST['admin_name'],
                 'admin_surname' => $_POST['admin_surname'],
-                'admin_email' => $adminEmail, // Używamy zmiennej
+                'admin_email' => $adminEmail, 
                 'faculties' => $_POST['faculties'] 
             ];
             

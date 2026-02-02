@@ -1,12 +1,6 @@
--- =============================================================
--- 0. CZYSZCZENIE BAZY (RESET)
--- Te komendy usuną stare tabele, widoki i funkcje przed utworzeniem nowych.
--- =============================================================
 
--- Usuwamy widoki
 DROP VIEW IF EXISTS vw_upcoming_events CASCADE;
 
--- Usuwamy tabele (kolejność nie jest krytyczna dzięki CASCADE, ale warto zachować porządek)
 DROP TABLE IF EXISTS event_participants CASCADE;
 DROP TABLE IF EXISTS events_archive CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
@@ -14,14 +8,9 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS faculties CASCADE;
 DROP TABLE IF EXISTS universities CASCADE;
 
--- Usuwamy funkcje (Triggery usuwają się same wraz z tabelami, ale funkcje zostają)
 DROP FUNCTION IF EXISTS check_event_date_before_join CASCADE;
 DROP FUNCTION IF EXISTS archive_deleted_event CASCADE;
 DROP FUNCTION IF EXISTS validate_future_event_date CASCADE;
-
--- =============================================================
--- TWORZENIE NOWEJ STRUKTURY
--- =============================================================
 
 -- 1. UCZELNIE
 CREATE TABLE universities (
@@ -82,7 +71,7 @@ CREATE TABLE event_participants (
     FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
 );
 
--- WIDOK (Wymóg projektu): Pokaż tylko nadchodzące wydarzenia z nazwami uczelni
+-- WIDOK: Pokaż tylko nadchodzące wydarzenia z nazwami uczelni
 CREATE VIEW vw_upcoming_events AS
 SELECT e.id, e.title, e.date, u.name as university_name, f.name as faculty_name
 FROM events e

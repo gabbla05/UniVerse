@@ -1,13 +1,12 @@
 .container {
     display: flex;
-    height: 100vh; /* Pełna wysokość ekranu */
+    height: 100vh; 
     width: 100vw;
-    overflow: hidden; /* Zapobiega paskom przewijania */
+    overflow: hidden; 
 }
 
-/* --- LEWA STRONA --- */
 .login-left {
-    flex: 1; /* Zajmuje 50% szerokości */
+    flex: 1; 
     background-color: var(--bg-card);
     position: relative;
     display: flex;
@@ -15,41 +14,35 @@
     align-items: center;
 }
 
-/* Styl dla Twojego dużego zdjęcia */
 .hero-image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Zdjęcie wypełnia całą przestrzeń bez deformacji */
+    object-fit: cover; 
     position: absolute;
     z-index: 0;
 }
 
-/* Ciemna nakładka na zdjęcie, żeby nie biło po oczach */
 .overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /*background: linear-gradient(to bottom, rgba(15, 23, 42, 0.3), var(--bg-dark));*/
     background: none;
     z-index: 1;
 }
 
-
-/* --- PRAWA STRONA --- */
 .login-right {
-    flex: 1; /* Zajmuje drugie 50% */
+    flex: 1; 
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center; /* Centrowanie poziome formularza */
-    padding: 4rem; /* Większy odstęp */
+    align-items: center; 
+    padding: 4rem; 
     position: relative;
     background-color: var(--bg-dark);
 }
 
-/* Logo w rogu */
 .logo-container {
     position: absolute;
     top: 2.5rem;
@@ -60,7 +53,7 @@
 }
 
 .logo-img {
-    height: 40px; /* Dostosuj wysokość swojego logo */
+    height: 40px; 
     width: auto;
 }
 
@@ -69,18 +62,14 @@
     font-weight: 700;
     color: var(--accent-neon);
     
-    /* Tutaj używamy Twojej wgranej czcionki */
     font-family: 'LogoFont', sans-serif; 
-    
-    /* Jeśli wolisz, żeby logo było TURKUSOWE jak na Figmie: */
-    /* color: var(--accent-neon); */
 }
 
 
-/* --- FORMULARZ --- */
+/*formularz*/
 .login-content {
     width: 100%;
-    max-width: 420px; /* Maksymalna szerokość formularza */
+    max-width: 420px; 
 }
 
 h1 {
@@ -109,29 +98,28 @@ label {
     margin-top: 1.25rem;
 }
 
-/* --- Inputy z ikonkami --- */
 .input-group {
-    position: relative; /* Ważne dla pozycjonowania ikonki */
+    position: relative; 
     display: flex;
     align-items: center;
 }
 
 .input-icon {
     position: absolute;
-    left: 16px; /* Odstęp ikonki od lewej krawędzi */
+    left: 16px; 
     width: 20px;
     height: 20px;
-    color: var(--text-gray); /* Kolor ikonki */
-    pointer-events: none; /* Żeby kliknięcie w ikonkę aktywowało input */
+    color: var(--text-gray); 
+    pointer-events: none; 
     transition: color 0.3s;
 }
 
 input {
     width: 100%;
-    padding: 1rem 1rem 1rem 3.5rem; /* Duży padding z lewej (3.5rem) żeby zrobić miejsce na ikonkę */
-    border-radius: 12px; /* Zaokrąglone rogi */
+    padding: 1rem 1rem 1rem 3.5rem; 
+    border-radius: 12px; 
     border: 1px solid var(--input-border);
-    background-color: var(--bg-card); /* Ciemniejsze tło inputa */
+    background-color: var(--bg-card); 
     color: var(--text-white);
     font-size: 1rem;
     font-family: 'Inter', sans-serif;
@@ -140,23 +128,19 @@ input {
 }
 
 input::placeholder {
-    color: #64748B; /* Ciemniejszy szary dla placeholdera */
+    color: #64748B; 
 }
 
-/* Efekt po kliknięciu w input */
 input:focus {
     border-color: var(--accent-neon);
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); /* Delikatna turkusowa poświata */
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); 
 }
 
-/* Zmiana koloru ikonki gdy input jest aktywny */
 input:focus + .input-icon,
 .input-group:focus-within .input-icon {
     color: var(--accent-neon);
 }
 
-
-/* --- Reszta elementów --- */
 .forgot-pass {
     text-align: right;
     margin-top: 0.75rem;
@@ -168,8 +152,8 @@ button {
     padding: 1rem;
     border-radius: 12px;
     border: none;
-    background-color: var(--accent-neon); /* TYLKO TEN TURKUS! */
-    color: var(--bg-dark); /* Ciemny tekst na jasnym przycisku dla kontrastu */
+    background-color: var(--accent-neon); 
+    color: var(--bg-dark); 
     font-weight: 700;
     font-size: 1.125rem;
     cursor: pointer;
@@ -182,7 +166,7 @@ button:hover {
 }
 
 button:active {
-    transform: scale(0.98); /* Lekkie wciśnięcie przy kliku */
+    transform: scale(0.98); 
 }
 
 .signup-link {
@@ -199,10 +183,10 @@ button:active {
     font-weight: 600;
 }
 
-/* --- RESPANSYWNOŚĆ (Tablet i telefon) --- */
+/*responsywnosc*/
 @media screen and (max-width: 1024px) {
     .login-left {
-        display: none; /* Na mniejszych ekranach ukrywamy zdjęcie */
+        display: none; 
     }
     
     .login-right {
