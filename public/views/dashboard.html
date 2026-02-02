@@ -25,7 +25,7 @@
                 </span>
 
                 <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'uni_admin'): ?>
-                    <a href="/edit-profile" class="nav-item">Change Password</a>
+                    <a href="/edit-profile" class="nav-item">Edit Profile</a>
                 <?php endif; ?>
                 <a href="/logout" class="nav-item logout-red">Log out</a>
             </div>
@@ -46,7 +46,7 @@
                     <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'user'): ?>
                         <a href="/profile">Profile</a>
                     <?php endif; ?>
-                    <a href="/edit-profile">Change Password</a>
+                    <a href="/edit-profile">Edit profile</a>
                     <a href="/logout" class="logout-link">Log out</a>
                 </div>
             </div>

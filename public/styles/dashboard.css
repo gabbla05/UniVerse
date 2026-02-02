@@ -285,30 +285,55 @@ h1 {
 /* --- IKONY EDYCJI I USUWANIA --- */
 .card-actions {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 12px;
+    right: 12px;
     display: flex;
-    gap: 8px;
+    align-items: center; /* Centruje kółka w pionie */
+    gap: 10px;           /* Jeden, równy odstęp sterowany przez flexa */
     z-index: 10;
+    margin: 0;
+    padding: 0;
 }
 
 .icon-btn {
-    width: 32px;
-    height: 32px;
+    width: 36px;         /* Troszkę większe kółka dla wygody */
+    height: 36px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     transition: all 0.2s;
+    text-decoration: none;
+    
+    /* KLUCZOWE: Resetujemy marginesy, żeby nic nie zakłócało gap'a */
+    margin: 0 !important; 
+    box-sizing: border-box; /* Pewność co do wymiarów */
+}
+
+/* Wyrównanie samych ikon w środku kółka */
+.icon-btn i {
+    font-size: 14px;
+    line-height: 1;
+    display: block; /* Usuwa dziwne zachowania inline */
 }
 
 .icon-btn.edit { color: var(--accent-neon); }
-.icon-btn.edit:hover { background-color: var(--accent-neon); color: var(--bg-dark); }
+.icon-btn.edit:hover { 
+    background-color: var(--accent-neon); 
+    color: var(--bg-dark); 
+    border-color: var(--accent-neon);
+    transform: translateY(-2px);
+}
 
 .icon-btn.delete { color: #ef4444; }
-.icon-btn.delete:hover { background-color: #ef4444; color: white; }
+.icon-btn.delete:hover { 
+    background-color: #ef4444; 
+    color: white; 
+    border-color: #ef4444;
+    transform: translateY(-2px);
+}
 
 /* --- RESPANSYWNOŚĆ --- */
 @media screen and (max-width: 768px) {

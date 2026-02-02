@@ -9,23 +9,22 @@
 <body>
 
     <nav class="navbar" style="flex-direction: column; gap: 1rem; padding: 1.5rem 1rem; justify-content: center;">
-        <div class="logo-container">
+        <div class="logo-container" style="margin: 0;">
             <img src="/public/img/logo.png" class="logo-img" alt="UniVerse Logo">
             <span class="logo-text">UniVerse</span>
         </div>
-        
+    
         <?php 
-            $backLink = '/profile'; // Domyślnie dla studenta (user)
-            
+            $backLink = '/profile'; 
             if (isset($_SESSION['user_role'])) {
                 if ($_SESSION['user_role'] === 'app_admin') {
-                    $backLink = '/admin';      // Admin Aplikacji -> wraca do /admin
+                    $backLink = '/admin';
                 } elseif ($_SESSION['user_role'] === 'uni_admin') {
-                    $backLink = '/dashboard';  // Admin Uczelni -> wraca do /dashboard
+                    $backLink = '/dashboard';
                 }
             }
         ?>
-        <a href="<?= $backLink; ?>" style="color: var(--text-gray); margin-right: 20px;">Cancel</a>
+        <a href="<?= $backLink; ?>" style="color: var(--text-gray); font-size: 0.9rem; font-weight: 500;">Cancel</a>
     </nav>
 
     <div class="admin-container" style="justify-content: center;">

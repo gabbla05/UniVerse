@@ -396,9 +396,9 @@ a.action-btn {
    RESPANSYWNOŚĆ I NOWY NAVBAR
    ========================================= */
 
-/* Domyślnie ukrywamy dropdown mobilny (trzy kropki) */
+/* 1. DOMYŚLNIE (DESKTOP): Ukrywamy kropki, pokazujemy linki */
 .dropdown-mobile {
-    display: none;
+    display: none; /* To jest kluczowe - ukrywa kropki na komputerze */
     position: relative;
 }
 
@@ -424,7 +424,7 @@ a.action-btn {
     color: #ef4444;
 }
 
-/* Stylizacja Dropdowna */
+/* Stylizacja Dropdowna (wspólna) */
 .dropdown-btn {
     background: none;
     border: none;
@@ -445,6 +445,7 @@ a.action-btn {
     border: 1px solid var(--input-border);
     z-index: 1000;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+    overflow: hidden;
 }
 
 .dropdown-mobile:hover .dropdown-content {
@@ -457,6 +458,7 @@ a.action-btn {
     display: block;
     font-size: 0.9rem;
     text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .dropdown-content a:hover {
@@ -467,30 +469,63 @@ a.action-btn {
 .dropdown-content .logout-link {
     color: #ef4444;
     border-top: 1px solid var(--input-border);
+    border-bottom: none;
 }
 
-/* --- MEDIA QUERIES --- */
+/* =========================================
+   MEDIA QUERIES (RESPANSYWNOŚĆ)
+   ========================================= */
 
 @media screen and (max-width: 1024px) {
     .admin-container {
-        flex-direction: column;
+        flex-direction: column; /* Układ pionowy na tabletach */
         padding: 2rem;
     }
-    .form-card { position: static; }
+    .list-section, .form-section {
+        width: 100%; /* Sekcje na pełną szerokość */
+        flex: none;
+    }
+    .form-card { 
+        position: static; /* Odpinamy sticky na mniejszych ekranach */
+        margin-top: 2rem;
+    }
     .navbar { padding: 1rem 2rem; }
-    .table-container { overflow-x: auto; }
+    .table-container { overflow-x: auto; } /* Scroll tabeli */
 }
 
 @media screen and (max-width: 768px) {
-    /* Przełączamy navbar na tryb mobilny (trzy kropki) */
-    .nav-desktop-links {
+    /* --- NAVBAR MOBILE FIX --- */
+    .navbar {
+        padding: 1rem 1.5rem;
+        flex-direction: row !important; /* Logo po lewej, kropki po prawej */
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Ukrywamy napis "Logged as..." */
+    .admin-name {
         display: none;
     }
-    .dropdown-mobile {
-        display: block;
+
+    /* UKRYWAMY linki tekstowe */
+    .nav-desktop-links {
+        display: none !important;
     }
-    .admin-name {
-        font-size: 0.8rem;
+    
+    /* POKAZUJEMY trzy kropki */
+    .dropdown-mobile {
+        display: block !important;
+    }
+
+    /* --- INNE POPRAWKI LAYOUTU --- */
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .search-bar {
+        width: 100%; /* Szukajka na pełną szerokość */
     }
 }
 
@@ -500,37 +535,36 @@ a.action-btn {
     }
 
     .navbar {
-        padding: 1rem;
-        flex-direction: column;
-        gap: 1rem;
+        padding: 0.8rem 1rem;
     }
-
-    .nav-actions {
-        width: 100%;
-        justify-content: space-between;
+    
+    .logo-text {
+        font-size: 1.2rem;
     }
 
     .form-card {
-        padding: 1rem;
+        padding: 1.5rem;
     }
 
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    /* Dostosowanie inputów na małym ekranie */
     .input-group input, .input-group select, .input-group textarea {
         font-size: 0.9rem;
-        padding: 0.875rem 0.875rem 0.875rem 3rem;
+        padding: 0.8rem 0.8rem 0.8rem 2.8rem;
     }
 
     .input-icon {
-        left: 14px;
+        left: 12px;
         width: 18px;
         height: 18px;
     }
 
-    .table-container {
-        font-size: 0.8rem;
-    }
-
     .table th, .table td {
-        padding: 0.5rem;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
     }
 }
 
