@@ -1,45 +1,87 @@
 <?php
 
+namespace src\services;
+
+// Importujemy klasy PHPMailera (to sprawia, że PHP wie, skąd brać funkcje mailowe)
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
 class EmailService {
-    
-    public static function send(string $to, string $subject, string $body) {
-        // Ustal folder zapisu
-        $uploadDir = __DIR__ . '/../../public/uploads/emails/';
+
+    // --- 1. GŁÓWNA FUNKCJA (Tę wywołuje aplikacja) ---
+    public function sendConfirmationEmail($userEmail, $eventTitle) {
+        $subject = "Confirmation: You joined $eventTitle";
         
-        // Jeśli folder nie istnieje, stwórz go
-        if (!file_exists($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+        $message = "Hey there!\n\n";
+        $message .= "This is a confirmation that you have successfully joined the event: $eventTitle.\n";
+        $message .= "See you there!\n\n";
+        $message .= "Best regards,\nUniVerse Team";
+
+        // NAJPIERW: Zapisz do pliku (Twoja "atrapa" - działa zawsze jako log)
+        $this->saveToTextFile($userEmail, $subject, $message);
+
+        // POTEM: Spróbuj wysłać prawdziwego maila przez Gmail
+        try {
+            $this->sendViaGmail($userEmail, $subject, $message);
+        } catch (Exception $e) {
+            // Jak nie ma neta albo coś pójdzie nie tak, to tylko zapiszemy błąd w logach serwera,
+            // ale strona się nie wywali studentowi.
+            error_log("Błąd wysyłania maila: " . $e->getMessage());
+        }
+    }
+
+    // --- 2. METODA "ATRAPA" (Zapis do pliku tekstowego) ---
+    private function saveToTextFile($to, $subject, $message) {
+        // Tworzymy unikalną nazwę pliku
+        $filename = date('Y-m-d_H-i-s') . '__' . $this->sanitizeFileName($to) . '.txt';
+        $path = __DIR__ . '/../../public/uploads/emails/' . $filename;
+
+        // Jeśli folder nie istnieje, to go stwórz
+        if (!is_dir(dirname($path))) {
+            mkdir(dirname($path), 0777, true);
         }
 
-        // --- PRZYGOTOWANIE NAZWY PLIKU ---
-        
-        // 1. Data i czas
-        $timestamp = date('Y-m-d_H-i-s');
-        
-        // 2. Temat (usuwamy dziwne znaki i spacje zamieniamy na podkreślniki)
-        $safeSubject = preg_replace('/[^a-zA-Z0-9_\- ]/', '', $subject);
-        $safeSubject = str_replace(' ', '_', $safeSubject);
-        
-        // 3. Unikalne ID (żeby pliki z tej samej sekundy się nie nadpisały)
-        $randomId = uniqid();
-        
-        // FORMAT NAZWY: DATA__EMAIL__TEMAT__ID.txt
-        // Np: 2025-12-27_21-30-05__jan.kowalski@pk.edu.pl__Confirmation_Joined__a1b2.txt
-        $filename = "{$timestamp}__{$to}__{$safeSubject}__{$randomId}.txt";
-        
-        $filePath = $uploadDir . $filename;
+        $content = "To: $to\nSubject: $subject\n\n$message";
+        file_put_contents($path, $content);
+    }
 
-        // --- TREŚĆ PLIKU ---
-        $content = "========================================\n";
-        $content .= "TO: $to\n";
-        $content .= "SUBJECT: $subject\n";
-        $content .= "DATE: " . date('Y-m-d H:i:s') . "\n";
-        $content .= "========================================\n\n";
-        $content .= $body;
-        $content .= "\n\n========================================\n";
-        $content .= "Sent via UniVerse Mock Mailer";
+    // --- 3. METODA "PRO" (Prawdziwy Gmail - PHPMailer) ---
+    private function sendViaGmail($to, $subject, $message) {
+        $mail = new PHPMailer(true);
 
-        // Zapisz plik
-        file_put_contents($filePath, $content);
+        // Ustawienia serwera Gmail
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        
+        // =================================================================
+        // TU WPISZ SWOJE DANE:
+        // =================================================================
+        $mail->Username   = 'gabrielablaut@gmail.com';     // <-- Twój adres Gmail (nadawca)
+        $mail->Password   = 'fgpp uxmm xjwr ovsr';     // <-- Twoje 16-znakowe hasło aplikacji
+        // =================================================================
+        
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+
+        // Nadawca (to co widzi odbiorca)
+        $mail->setFrom('gabrielablaut@gmail.com', 'UniVerse App'); // <-- Tu też wpisz swój mail
+        
+        // Odbiorca
+        $mail->addAddress($to);
+
+        // Treść
+        $mail->isHTML(false); // Wysyłamy czysty tekst
+        $mail->Subject = $subject;
+        $mail->Body    = $message;
+
+        $mail->send();
+    }
+
+    // Funkcja pomocnicza do czyszczenia nazwy pliku
+    private function sanitizeFileName($file) {
+        $file = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file);
+        return mb_ereg_replace("([\.]{2,})", '', $file);
     }
 }
