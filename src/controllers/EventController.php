@@ -301,13 +301,12 @@ class EventController extends AppController {
         $wantsEmails = $_SESSION['email_notifications'] ?? true; 
 
         if ($wantsEmails && $event) {
-            $subject = "Confirmation: You joined " . $event->getTitle();
-            $body = "Hello!\n\nYou have successfully signed up for the event: " . $event->getTitle() . ".\n";
-            $body .= "Date: " . str_replace('T', ' ', $event->getDate()) . "\n";
-            $body .= "Location: " . $event->getLocation() . "\n\nSee you there!";
-            
-            // Wywołujemy nasz serwis
-            EmailService::send($userEmail, $subject, $body);
+            // 1. Tworzymy obiekt z pełną ścieżką (namespace)
+            $emailService = new \src\services\EmailService();
+
+            // 2. Wywołujemy gotową metodę z EmailService.php
+            // Ona sama sobie ustawi temat i treść "Confirmation...", wystarczy jej podać maila i tytuł wydarzenia
+            $emailService->sendConfirmationEmail($userEmail, $event->getTitle());
         }
         // ---------------------------------
 

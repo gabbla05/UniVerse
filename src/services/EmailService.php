@@ -78,7 +78,7 @@ class EmailService {
         // =================================================================
         // TU WPISZ SWOJE DANE:
         // =================================================================
-        $mail->Username   = 'gabrielablaut@gmail.com';     // <-- Twój adres Gmail (nadawca)
+        $mail->Username   = 'gabrielablaut05@gmail.com';     // <-- Twój adres Gmail (nadawca)
         $mail->Password   = 'fgpp uxmm xjwr ovsr';     // <-- Twoje 16-znakowe hasło aplikacji
         // =================================================================
         
@@ -86,7 +86,7 @@ class EmailService {
         $mail->Port       = 587;
 
         // Nadawca (to co widzi odbiorca)
-        $mail->setFrom('gabrielablaut@gmail.com', 'UniVerse App'); // <-- Tu też wpisz swój mail
+        $mail->setFrom('gabrielablaut05@gmail.com', 'UniVerse App'); // <-- Tu też wpisz swój mail
         
         // Odbiorca
         $mail->addAddress($to);
