@@ -75,7 +75,7 @@ This project is fully containerized using **Docker**, eliminating the need for l
    ```bash
    docker exec -i db psql -U docker -d db < database.sql
 
-## 📊 Database Architecture (ERD)
+## 📊 Database Architecture 
 
 The UniVerse platform utilizes a relational PostgreSQL database designed with specific constraints, triggers, and functions to ensure data integrity and automate core academic management tasks.
 
@@ -108,7 +108,7 @@ The database handles business logic directly through PL/pgSQL to guarantee safet
   <img src="public/uploads/ERD_diagram.png" width="800" alt="Entity Relationship Diagram">
 </p>
 
-## 🔒 Security Measures (Bingo Report)
+## 🔒 Security Measures
 
 Following industry best practices (PHP Security Bingo), the project implements critical defense mechanisms to ensure data safety and system integrity:
 
