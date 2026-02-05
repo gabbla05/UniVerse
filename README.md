@@ -110,7 +110,7 @@ The database handles business logic directly through PL/pgSQL to guarantee safet
 
 ## 🔒 Security Measures
 
-Following industry best practices (PHP Security Bingo), the project implements critical defense mechanisms to ensure data safety and system integrity:
+Following industry best practices, the project implements critical defense mechanisms to ensure data safety and system integrity:
 
 ### 1. SQL Injection Protection (Prepared Statements)
 All database interactions utilize **PDO Prepared Statements**. User input is never concatenated directly into SQL queries, effectively eliminating SQL injection risks.
